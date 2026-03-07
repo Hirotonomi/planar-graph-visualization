@@ -34,6 +34,69 @@ Program udostępnia następujące funkcje:
 	\item wyświetlanie komunikatów o błędach w przypadku nieprawidłowego formatu danych wejściowych,
 \end{itemize}
 
+\section{Format danych wejściowych}
+
+Graf wejściowy powinien być zapisany w pliku tekstowym, gdzie każda linia
+reprezentuje krawędź grafu. Format linii powinien być następujący:
+
+\begin{verbatim}
+<nazwa_krawędzi> <wierzchołek_A> <wierzchołek_B> <waga_krawędzi>
+...
+\end{verbatim}
+
+Przykład:
+\begin{verbatim}
+AB 1 2 1
+BC 2 3 1
+CD 3 4 1
+DB 4 2 1.407
+\end{verbatim}
+
+\section{Format danych wyjściowych}
+
+Program generuje plik zawierający współrzędne wierzchołków w formacie binarnym
+lub tekstowym.
+
+\subsection{Format tekstowy}
+Dane w formacie tekstowym są zapisywane w następujący sposób:
+
+\begin{verbatim}
+<wierzchołek> <współrzędna_x> <współrzędna_y>
+...
+\end{verbatim}
+
+Przykład:
+
+\begin{verbatim}
+1 0.0 0.0
+2 1.0 0.0
+3 1.0 1.0
+4 0.0 1.0
+\end{verbatim}
+
+\subsection{Format binarny}
+
+Dane w formacie binarnym są zapisywane jako ciąg bajtów, gdzie każdy
+wierzchołek jest reprezentowany przez trzy wartości: identyfikator wierzchołka
+(4 bajty), współrzędna x (8 bajtów) i współrzędna y (8 bajtów). W sumie każdy
+wierzchołek zajmuje 20 bajtów.
+
+Format danych binarnych można przedstawić następująco:
+
+\begin{verbatim}
+[ID_wierzchołka][współrzędna_x][współrzędna_y]
+...
+\end{verbatim}
+
+Przykład dla wierzchołków 1, 2, 3 i 4 z współrzędnymi (0.0, 0.0), (1.0, 0.0), (1.0, 1.0) i (0.0, 1.0):
+\begin{verbatim}
+[ 01 00 00 00 ][00 00 00 00 00 00 00 00][00 00 00 00 00 00 00 00]
+[ 02 00 00 00 ][00 00 00 00 00 00 F0 3F][00 00 00 00 00 00 00 00]
+[ 03 00 00 00 ][00 00 00 00 00 00 F0 3F][00 00 00 00 00 00 F0 3F]
+[ 04 00 00 00 ][00 00 00 00 00 00 00 00][00 00 00 00 00 00 F0 3F]
+\end{verbatim}
+W tym przykładzie, identyfikatory wierzchołków są zapisane jako 4-bajtowe liczby całkowite, a współrzędne x i y są zapisane jako 8-bajtowe liczby zmiennoprzecinkowe (double). W rzeczywistości, dane binarne będą zapisane bez spacji i nawiasów, a powyższy przykład jest jedynie ilustracją formatu danych.
+
 
 
 
