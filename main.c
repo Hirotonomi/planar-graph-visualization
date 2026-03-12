@@ -16,6 +16,7 @@ typedef struct {
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
+		fprintf(stderr, "Sprawdź dokumentacje programu, sekcja nr 5 i spróbuj ponownie");
         return EXIT_FAILURE;
     }
 	srand((unsigned int)time(NULL));

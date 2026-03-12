@@ -169,7 +169,101 @@ Wczytanie grafu z pliku domyślnego, zapis binarny
 ./program -b
 \end{verbatim}
 
+\section{Sytuacje wyjątkowe}
+\label{sec:wyjatki}
 
+Poniżej opisano sytuacje wyjątkowe obsługiwane przez program. We wszystkich
+przypadkach komunikaty o błędach są wypisywane na standardowe wyjście błędów
+(\texttt{stderr}), a program kończy działanie z kodem powrotu
+\texttt{EXIT\_FAILURE} (wartość \texttt{1}), chyba że zaznaczono inaczej.
+
+\begin{description}
+
+    \item[Brak argumentów wywołania]
+    \hfill \\
+    \textit{Sytuacja:} Program uruchomiony bez żadnych argumentów. \\
+    \textit{Komunikat:}     
+    \begin{verbatim}
+Sprawdź dokumentacje programu, sekcja nr 5 i spróbuj ponownie
+    \end{verbatim}
+    \textit{Kod powrotu:} \texttt{1}
+
+    \item[Nieznana lub niekompletna flaga]
+    \hfill \\
+    \textit{Sytuacja:} Podano flagę, której program nie rozpoznaje, lub flagę
+    wymagającą argumentu (np. \texttt{-i}, \texttt{-o}, \texttt{-a}) bez
+    podania wartości. \\
+    \textit{Komunikat:}
+    \begin{verbatim}
+Nieznany lub niekompletny argument: <flaga>
+    \end{verbatim}
+    \textit{Kod powrotu:} \texttt{1}
+
+    \item[Nieobsługiwany algorytm]
+    \hfill \\
+    \textit{Sytuacja:} Wartość podana po fladze \texttt{-a} nie odpowiada
+    żadnemu z dostępnych algorytmów. \\
+    \textit{Komunikat:}
+    \begin{verbatim}
+Taki algorytm nie jest obsługiwany
+    \end{verbatim}
+    \textit{Kod powrotu:} \texttt{1}
+
+    \item[Nie można otworzyć pliku wejściowego]
+    \hfill \\
+    \textit{Sytuacja:} Plik wskazany flagą \texttt{-i} (lub domyślny plik
+    \texttt{input}) nie istnieje lub brak uprawnień do odczytu. \\
+    \textit{Komunikat:}
+    \begin{verbatim}
+Błąd: nie można otworzyć pliku wejściowego: <nazwa_pliku>
+    \end{verbatim}
+    \textit{Kod powrotu:} \texttt{1}
+
+    \item[Nie można otworzyć pliku wyjściowego]
+    \hfill \\
+    \textit{Sytuacja:} Program nie może utworzyć ani zapisać pliku wskazanego
+    flagą \texttt{-o} (np. brak uprawnień do zapisu w danym katalogu). \\
+    \textit{Komunikat:}
+    \begin{verbatim}
+Błąd: nie można otworzyć pliku wyjściowego: <nazwa_pliku>
+    \end{verbatim}
+    \textit{Kod powrotu:} \texttt{1}
+
+    \item[Nieprawidłowy format pliku wejściowego]
+    \hfill \\
+    \textit{Sytuacja:} Linia w pliku wejściowym nie spełnia wymaganego formatu
+    (brakuje pól, waga nie jest liczbą, identyfikatory wierzchołków są
+    nieprawidłowe itp.). \\
+    \textit{Komunikat:}
+    \begin{verbatim}
+Błąd: nieprawidłowy format danych w linii <numer_linii>: <treść_linii>
+    \end{verbatim}
+    \textit{Kod powrotu:} \texttt{1}
+
+    \item[Pusty graf]
+    \hfill \\
+    \textit{Sytuacja:} Plik wejściowy jest pusty lub nie zawiera żadnych
+    poprawnych krawędzi. \\
+    \textit{Komunikat:}
+    \begin{verbatim}
+Błąd: plik wejściowy nie zawiera żadnych krawędzi
+    \end{verbatim}
+    \textit{Kod powrotu:} \texttt{1}
+
+    \item[Graf nieplanarny]
+    \hfill \\
+    \textit{Sytuacja:} Wczytany graf nie jest grafem planarnym — nie można go
+    narysować na płaszczyźnie bez przecięć krawędzi. Program nie przerywa
+    działania, a obliczenia są kontynuowane z celem minimalizacji liczby
+    przecięć krawędzi w wynikowej wizualizacji. \\
+    \textit{Komunikat:}
+    \begin{verbatim}
+Ostrzeżenie: graf nie jest planarny. 
+Wynik może zawierać przecięcia krawędzi.
+    \end{verbatim}
+    \textit{Kod powrotu:} \texttt{0}
+
+\end{description}
 
 
 
