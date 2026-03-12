@@ -99,6 +99,77 @@ W tym przykładzie, identyfikatory wierzchołków są zapisane jako 4-bajtowe
 liczby całkowite, a współrzędne x i y są zapisane jako 8-bajtowe liczby
 zmiennoprzecinkowe (double). W rzeczywistości, dane binarne będą zapisane bez
 spacji i nawiasów, a powyższy przykład jest jedynie ilustracją formatu danych.
+\section{Flagi sterujące programem}
+
+Program jest wywoływany z linii poleceń w następujący sposób:
+
+\begin{verbatim}
+./program <plik_wejściowy> [flagi]
+\end{verbatim}
+Jedynym wymaganym argumentem musi być ścieżka do pliku wejściowego z grafem.
+Pozostałe argumenty są opcjonalne i opisano je w poniższej tabeli.
+
+\begin{center}
+\begin{tabular}{|c|c|p{7cm}|c|}
+\hline
+\textbf{Flaga} & \textbf{Argument} & \textbf{Opis} & \textbf{Domyślnie} \\
+\hline
+\texttt{-i} & \texttt{<ścieżka>} & Ścieżka do pliku wejściowego z grafem & \texttt{"input"} \\
+\hline
+\texttt{-o} & \texttt{<ścieżka>} & Ścieżka do pliku wyjściowego z wynikami & \texttt{"output"} \\
+\hline
+\texttt{-a} & \texttt{<skrót nazwy>} & Wybór algorytmu rozmieszczania wierzchołków & \texttt{1} \\
+\hline
+\texttt{-b} & — & Zapis wyników w formacie binarnym & wyłączone \\
+\hline
+\texttt{-h} & — & Zapis wyników w formacie czytelnym dla człowieka & wyłączone \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Opis flag}
+
+\begin{description}
+    \item[\texttt{-i <ścieżka>}]
+    Określa ścieżkę do pliku wejściowego zawierającego opis grafu w formacie
+    tekstowym (opisanym w sekcji 3). Jeśli flaga nie zostanie podana, program
+    szuka pliku o nazwie \texttt{input} w bieżącym katalogu roboczym.
+
+    \item[\texttt{-o <ścieżka>}]
+    Określa ścieżkę do pliku wyjściowego, do którego zostaną zapisane
+    współrzędne wierzchołków. Jeśli plik nie istnieje, zostanie utworzony.
+    Jeśli flaga nie zostanie podana, wyniki zostaną zapisane do pliku
+    o nazwie \texttt{output} w bieżącym katalogu.
+
+    \item[\texttt{-a <nr>}]
+    Wybór algorytmu wyznaczania współrzędnych. Dostępne wartości:
+    \begin{itemize}
+        \item \texttt{"alg1"} — place holder dla pierwszego algorytmu który wybierzemy,
+        \item \texttt{"alg2"} — place holder dla drugiego algorytmu który wybierzemy.
+    \end{itemize}
+    Podanie nieobsługiwanej wartości skutkuje błędem i zakończeniem programu
+    (patrz sekcja wyjątki).
+
+    \item[\texttt{-b}]
+    Włącza zapis wyników w formacie binarnym (opisanym w sekcji 4.2).
+    Flaga nie przyjmuje dodatkowego argumentu.
+
+    \item[\texttt{-h}]
+    Włącza zapis wyników w formacie tekstowym, czytelnym dla człowieka
+    (opisanym w sekcji 4.1). Flaga nie przyjmuje dodatkowego argumentu.
+\end{description}
+
+\subsection{Przykładowe wywołania}
+Wczytanie grafu z pliku "graf.txt", zapis wyników do "wyniki.txt", algorytmem nr 1, format tekstowy
+\begin{verbatim}
+./program -i graf.txt -o wyniki.txt -a 1 -h
+\end{verbatim}
+Wczytanie grafu z pliku domyślnego, zapis binarny
+\begin{verbatim}
+./program -b
+\end{verbatim}
+
+
 
 
 
