@@ -100,6 +100,7 @@ W tym przykładzie, identyfikatory wierzchołków są zapisane jako 4-bajtowe
 liczby całkowite, a współrzędne x i y są zapisane jako 8-bajtowe liczby
 zmiennoprzecinkowe (double). W rzeczywistości, dane binarne będą zapisane bez
 spacji i nawiasów, a powyższy przykład jest jedynie ilustracją formatu danych.
+
 \section{Flagi sterujące programem}
 
 Program jest wywoływany z linii poleceń w następujący sposób:
@@ -114,15 +115,17 @@ Możliwe argumenty wywołania programu są opisane w poniższej tabelce to:
 		\hline
 		\textbf{Flaga} & \textbf{Argument}      & \textbf{Opis}                                    & \textbf{Domyślnie} \\
 		\hline
-		\texttt{-i}    & \texttt{<ścieżka>}     & Ścieżka do pliku wejściowego z grafem            & \texttt{"input"}   \\
+		\texttt{-i}    & \texttt{<nazwa>}     & Nazwa pliku wejściowego z grafem            & \texttt{"input.txt"}   \\
 		\hline
-		\texttt{-o}    & \texttt{<ścieżka>}     & Ścieżka do pliku wyjściowego z wynikami          & \texttt{"output"}  \\
+		\texttt{-o}    & \texttt{<nazwa>}     & Ścieżka do pliku wyjściowego z wynikami         & \texttt{Katalog porgramu}  \\
+		\hline
+        \texttt{-on}    & \texttt{<nazwa>}     & Nazwa pliku wyjściowego z wynikami          & \texttt{"output"}  \\
 		\hline
 		\texttt{-a}    & \texttt{<skrót nazwy>} & Wybór algorytmu rozmieszczania wierzchołków      & \texttt{1}         \\
 		\hline
 		\texttt{-b}    & —                      & Zapis wyników w formacie binarnym                & wyłączone          \\
 		\hline
-		\texttt{-h}    & —                      & Zapis wyników w formacie czytelnym dla człowieka & wyłączone          \\
+		\texttt{-h}    & —                      & Zapis wyników w formacie czytelnym dla człowieka & włączone          \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -136,33 +139,33 @@ Możliwe argumenty wywołania programu są opisane w poniższej tabelce to:
 	      szuka pliku o nazwie \texttt{input} w bieżącym katalogu roboczym.
 
 	\item[\texttt{-o <ścieżka>}]
-	      Określa ścieżkę do pliku wyjściowego, do którego zostaną zapisane
-	      współrzędne wierzchołków. Jeśli plik nie istnieje, zostanie utworzony.
-	      Jeśli flaga nie zostanie podana, wyniki zostaną zapisane do pliku
-	      o nazwie \texttt{output} w bieżącym katalogu.
+	      Określa ścieżkę do katalogu wyjściowego, w którym zostanie utworzony plik wyjściowy. 
+	      Jeśli flaga nie zostanie podana, wyniki zostaną zapisane w bieżącym katalogu.
+    \item[\texttt{-on <nazwa>}]
+	      Określa nazwę pliku wyjściowego. Jeśli flaga nie zostanie podana, wyniki zostaną zapisane w pliku o nazwie \texttt{output}.
 
 	\item[\texttt{-a <nr>}]
 	      Wybór algorytmu wyznaczania współrzędnych. Dostępne wartości:
 	      \begin{itemize}
-		      \item \texttt{"alg1"} — Fruchterman–Reingold
+		      \item \texttt{"FrRe"} — Fruchterman–Reingold
 		      \item \texttt{"alg2"} — place holder dla drugiego algorytmu który wybierzemy.
 	      \end{itemize}
 	      Podanie nieobsługiwanej wartości skutkuje błędem i zakończeniem programu
 	      (patrz sekcja wyjątki).
 
 	\item[\texttt{-b}]
-	      Włącza zapis wyników w formacie binarnym (opisanym w sekcji 4.2).
+	      Włącza zapis wyników w formacie binarnym (.bin)(opisanym w sekcji 4.2).
 	      Flaga nie przyjmuje dodatkowego argumentu.
 
 	\item[\texttt{-h}]
-	      Włącza zapis wyników w formacie tekstowym, czytelnym dla człowieka
+	      Włącza zapis wyników w formacie tekstowym (.txt), czytelnym dla człowieka
 	      (opisanym w sekcji 4.1). Flaga nie przyjmuje dodatkowego argumentu.
 \end{description}
 
 \subsection{Przykładowe wywołania}
 Wczytanie grafu z pliku "graf.txt", zapis wyników do "wyniki.txt", algorytmem nr 1, format tekstowy
 \begin{verbatim}
-./program -i graf.txt -o wyniki.txt -a 1 -h
+./program -i graf -o wyniki -a 1 -b -h
 \end{verbatim}
 Wczytanie grafu z pliku domyślnego, zapis binarny
 \begin{verbatim}
@@ -262,6 +265,16 @@ Ostrzeżenie: graf nie jest planarny.
 Wynik może zawierać przecięcia krawędzi.
     \end{verbatim}
 	      \textit{Kod powrotu:} \texttt{0}
+
+    \item[Błąd alokacji pamięci]
+	      \hfill \\
+	      \textit{Sytuacja:} Program nie może zaalokować wymaganej pamięci podczas
+	      wczytywania grafu lub wykonywania obliczeń. \\
+	      \textit{Komunikat:}
+	      \begin{verbatim}
+Błąd: nie można zaalokować pamięci
+    \end{verbatim}
+	      \textit{Kod powrotu:} \texttt{1}
 
 \end{description}
 
