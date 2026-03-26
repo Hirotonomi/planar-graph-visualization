@@ -1,3 +1,9 @@
+# Project wide ignores:
+bin/
+build/
+
+
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
