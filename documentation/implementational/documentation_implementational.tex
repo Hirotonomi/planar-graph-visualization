@@ -1,0 +1,120 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+    language=C,                     % set language
+    basicstyle=\ttfamily\small,     % font style
+    keywordstyle=\color{blue},      % keywords
+    stringstyle=\color{red},        % strings
+    commentstyle=\color{green},     % comments
+    numbers=left,                   % line numbers
+    numberstyle=\tiny,              
+    frame=single,                   % frame around code
+    breaklines=true                 % automatic line breaking
+}
+
+
+
+
+\title{Dokumentacja implementacyjna}
+\author{Mateusz Kamieniecki \\ Jan Rękas}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{main.c}
+W funkcji main mamy wczytywanie argumentów do odpalania programu przy użyciu
+getopt(). Argumenty mają domyślnie wartości:
+\begin{itemize}
+	\item -i: input.txt
+	\item -o: . (domyslny katalog gdzie znajduje się program)
+	\item -n: output
+	\item -a: 1
+\end{itemize}
+Jak żaden z argumentów \textit{-h} oraz \textit{-b} nie jest podany to program
+automatycznie uruchamia się z flagą \textit{-b} włączoną i informuje użytkownika. W
+funkcji main są też odpalane funkcje do wczytywania danych z pliku, wypisywania
+danych do pliku/plików, funkcje tworzące graf z plików oraz funkcje do
+przeprowadzenia algorytmów.
+
+\section{fileio.c oraz fileio.h}
+
+\section{graph.c oraz graph.h}
+\subsection{Graph.h}
+Graph.h udostępnia następujące structy:
+\subsubsection{struct Edge}
+\begin{lstlisting}
+typedef struct Edge {
+    int to;
+    double weight;
+    char *name;
+} Edge;
+\end{lstlisting}
+Struct Edge reprezentuje krawędź w grafie. Zawiera ona informacje o wierzchołku
+docelowym, wadze krawędzi oraz nazwie krawędzi.
+\subsubsection{struct Vector}
+\begin{lstlisting}
+typedef struct Vector {
+    Edge *data;
+    int size;
+    int capacity;
+} Vector;
+\end{lstlisting}
+Struct Vector reprezentuje dynamiczną tablicę krawędzi. Zawiera ona wskaźnik na
+dane, aktualny rozmiar oraz pojemność tablicy.
+\subsubsection{struct Graph}
+\begin{lstlisting}
+typedef struct Graph {
+    int verticies_num;
+    Vector *adj;
+} Graph;
+\end{lstlisting}
+Struct Graph reprezentuje graf nieskierowany. Zawiera ona liczbę wierzchołków
+oraz wskaźnik na tablicę wektorów, gdzie każdy wektor reprezentuje listę
+sąsiedztwa dla danego wierzchołka.
+\subsection{graph.c}
+Graph.c udostępnia następujące funkcje:
+\subsubsection{vector\_init}
+Funkcja vector\_init inicjalizuje wektor, ustawiając jego rozmiar na 0,
+pojemność na 4 oraz alokując pamięć dla danych.
+\subsubsection{vector\_push\_back}
+Funkcja vector\_push\_back dodaje krawędź do wektora. Jeśli rozmiar wektora
+osiągnie jego pojemność, funkcja podwaja pojemność i realokuje pamięć dla
+danych.
+\subsubsection{vector\_free}
+Funkcja vector\_free zwalnia pamięć zajmowaną przez dane wektora.
+\subsubsection{create\_graph}
+Funkcja create\_graph tworzy graf o określonej liczbie wierzchołków, alokując
+pamięć dla tablicy wektorów i inicjalizując każdy wektor.
+\subsubsection{add\_edge}
+Funkcja add\_edge dodaje krawędź do grafu, aktualizując listę sąsiedztwa dla obu wierzchołków (ponieważ graf jest nieskierowany).
+\subsubsection{free\_graph}
+Funkcja free\_graph zwalnia pamięć zajmowaną przez graf, w tym pamięć dla list
+sąsiedztwa i samego grafu.
+\section{node.h}
+Node.h udostępnia następujący struct:
+\begin{lstlisting}
+typedef struct Node {
+    double x;
+    double y;
+    int id;
+} Node;
+\end{lstlisting}
+Struct Node reprezentuje wierzchołek w grafie, zawierając informacje o jego
+współrzędnych (x, y) oraz unikalnym identyfikatorze (id).
+\section{tutte\_embedding.c oraz tutte\_embedding.h}
+
+
+
+\end{document}
+
