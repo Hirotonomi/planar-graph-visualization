@@ -6,6 +6,10 @@
 // FIXME: redo error handling cause bad??
 // TODO: remove print_graph later, only for debugging purposes
 
+/**
+ * Initializes a vector with an initial capacity of 4.
+ * @param vector The vector to initialize.
+ */
 void vector_init(Vector *vector) {
     vector->size = 0;
     vector->capacity = 4; // Initial capacity
@@ -16,6 +20,11 @@ void vector_init(Vector *vector) {
     }
 }
 
+/**
+ * Adds an edge to the vector, resizing by factor of 2 if necessary.
+ * @param vector The vector to add the edge to.
+ * @param e The edge to add.
+ */
 void vector_push_back(Vector *vector, Edge e) {
     if (vector->size >= vector->capacity) {
         vector->capacity *= 2;
@@ -28,6 +37,10 @@ void vector_push_back(Vector *vector, Edge e) {
     vector->data[vector->size++] = e;
 }
 
+/**
+ * Frees the memory allocated for the vector, including the edge names.
+ * @param vector The vector to free.
+ */
 void vector_free(Vector *vector) {
     for (int i = 0; i < vector->size; i++) {
         free(vector->data[i].name);
@@ -35,6 +48,11 @@ void vector_free(Vector *vector) {
     free(vector->data);
 }
 
+/**
+ * Creates a graph with the specified number of vertices.
+ * @param verticies The number of vertices in the graph.
+ * @return A pointer to the created graph.
+ */
 Graph *create_graph(int verticies) {
     Graph *graph = malloc(sizeof(Graph));
     graph->verticies_num = verticies;
@@ -45,6 +63,14 @@ Graph *create_graph(int verticies) {
     return graph;
 }
 
+/**
+ * Adds an edge to the graph, creating a reverse edge for undirected graphs.
+ * @param graph The graph to add the edge to.
+ * @param from The starting vertex of the edge.
+ * @param to The ending vertex of the edge.
+ * @param weight The weight of the edge.
+ * @param name The name of the edge.
+ */
 void add_edge(Graph *graph, int from, int to, double weight, char *name) {
     Edge e;
     e.to = to;
@@ -66,6 +92,11 @@ void add_edge(Graph *graph, int from, int to, double weight, char *name) {
     vector_push_back(&graph->adj[to], reverse_e);
 }
 
+/**
+ * Frees the memory allocated for the graph, including all edges and their
+ * names.
+ * @param graph The graph to free.
+ */
 void free_graph(Graph *graph) {
     for (int i = 0; i < graph->verticies_num; i++) {
         vector_free(&graph->adj[i]);
@@ -74,6 +105,10 @@ void free_graph(Graph *graph) {
     free(graph);
 }
 
+/**
+ * Prints the graph for debugging purposes.
+ * @param graph The graph to print.
+ */
 void print_graph(Graph *graph) {
     for (int i = 0; i < graph->verticies_num; i++) {
         printf("Vertex %d:\n", i);
