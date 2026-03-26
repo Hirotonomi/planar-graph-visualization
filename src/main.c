@@ -1,67 +1,70 @@
+#include "utils.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include "utils.h"
+#include <unistd.h>
 
 typedef struct {
     char *in_file;
+    char *out_path;
     char *out_file;
     int algorithm;
-    int binary; //0 if not bin 1 if bin
-	int human; //human readable - 0 if nah 1 if yuh
-} CodeRun;
-
-
+    int binary; // 0 if not bin 1 if bin
+    int human;  // human readable - 0 if nah 1 if yuh
+} Arguments;
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-		fprintf(stderr, "Sprawdź dokumentacje programu, sekcja nr 5 i spróbuj ponownie");
-        return EXIT_FAILURE;
+    Arguments args = {0};
+    args.in_file = "input.txt";
+    args.out_path = ".";
+    args.out_file = "output";
+    args.algorithm = 1;
+    args.binary = 0;
+    args.human = 0;
+
+    int opt = 0;
+    while (opt = getopt(argc, argv, "i:o:n:a:bh"), opt != -1) {
+        switch (opt) {
+        case 'i':
+            args.in_file = optarg;
+            break;
+        case 'o':
+            args.out_path = optarg;
+            break;
+        case 'n':
+            args.out_file = optarg;
+            break;
+        case 'a':
+            args.algorithm = parse_algorithm(optarg);
+            if (args.algorithm == -1) {
+                fprintf(stderr, "Taki alogorytm nie jest obsługiwany\n");
+                return EXIT_FAILURE;
+            }
+            break;
+        case 'b':
+            args.binary = 1;
+            break;
+        case 'h':
+            args.human = 1;
+            break;
+        default:
+            fprintf(stderr, "Nieznany lub niekompletny argument: -%c\n",
+                    optopt);
+            return EXIT_FAILURE;
+        }
     }
-	srand((unsigned int)time(NULL));
-
-    CodeRun arguments = {0};
-    arguments.in_file = "input";
-	arguments.out_file = "output";
-	arguments.algorithm = 1;
-	arguments.binary = 0;
-	arguments.human = 0;
-
-    for (int i = 2; i < argc; i++) {
-		if (strcmp(argv[i], "-i") == 0 && i + 1 < argc) {
-			arguments.in_file = argv[++i];
-
-		} else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc) {
-			arguments.out_file = argv[++i];
-
-		} else if (strcmp(argv[i], "-a") == 0 && i + 1 < argc) {
-			arguments.algorithm = parse_algorithm(argv[++i]);
-			
-			if (arguments.algorithm == -1){
-				fprintf(stderr, "Taki alogorytm nie jest obsługiwany\n");
-				return EXIT_FAILURE;
-			}
-		}  else if (strcmp(argv[i], "-b") == 0) {
-			arguments.binary = 1;
-
-		}  else if (strcmp(argv[i], "-h") == 0) {
-			arguments.human = 1;
-
-		} else {
-			fprintf(stderr, "Nieznany lub niekompletny argument: %s\n", argv[i]);
-
-			return EXIT_FAILURE;
-		}
+    if (args.binary == 0 && args.human == 0) {
+        printf("Nie wybrano formatu wyjściowego, domyślnie ustawiono na "
+               "binarny\n");
+        args.binary = 1;
     }
 
-    printf("Plik wejściowy: %s\n", arguments.in_file);
-	printf("Plik wyjściowy: %s\n", arguments.out_file);
-	printf("Algorytm: %d\n", arguments.algorithm);
-	printf("Format binarny: %s\n", arguments.binary ? "tak" : "nie");
-	printf("Czytelny dla człowieka: %s\n", arguments.human ? "tak" : "nie");
-
-	
+    printf("Plik wejściowy: %s\n", args.in_file);
+    printf("Ścieżka wyjściowa: %s\n", args.out_path);
+    printf("Plik wyjściowy: %s\n", args.out_file);
+    printf("Algorytm: %d\n", args.algorithm);
+    printf("Format binarny: %s\n", args.binary ? "tak" : "nie");
+    printf("Czytelny dla człowieka: %s\n", args.human ? "tak" : "nie");
 
     return EXIT_SUCCESS;
 }
