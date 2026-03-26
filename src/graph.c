@@ -50,14 +50,14 @@ void vector_free(Vector *vector) {
 
 /**
  * Creates a graph with the specified number of vertices.
- * @param verticies The number of vertices in the graph.
+ * @param vertices The number of vertices in the graph.
  * @return A pointer to the created graph.
  */
-Graph *create_graph(int verticies) {
+Graph *create_graph(int vertices) {
     Graph *graph = malloc(sizeof(Graph));
-    graph->verticies_num = verticies;
-    graph->adj = malloc(verticies * sizeof(Vector));
-    for (int i = 0; i < verticies; i++) {
+    graph->vertices_num = vertices;
+    graph->adj = malloc(vertices * sizeof(Vector));
+    for (int i = 0; i < vertices; i++) {
         vector_init(&graph->adj[i]);
     }
     return graph;
@@ -98,7 +98,7 @@ void add_edge(Graph *graph, int from, int to, double weight, char *name) {
  * @param graph The graph to free.
  */
 void free_graph(Graph *graph) {
-    for (int i = 0; i < graph->verticies_num; i++) {
+    for (int i = 0; i < graph->vertices_num; i++) {
         vector_free(&graph->adj[i]);
     }
     free(graph->adj);
@@ -110,7 +110,7 @@ void free_graph(Graph *graph) {
  * @param graph The graph to print.
  */
 void print_graph(Graph *graph) {
-    for (int i = 0; i < graph->verticies_num; i++) {
+    for (int i = 0; i < graph->vertices_num; i++) {
         printf("Vertex %d:\n", i);
         for (int j = 0; j < graph->adj[i].size; j++) {
             Edge e = graph->adj[i].data[j];

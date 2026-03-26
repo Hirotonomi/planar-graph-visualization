@@ -14,7 +14,7 @@ typedef struct Vector {
 } Vector;
 
 typedef struct Graph {
-    int verticies_num;
+    int vertices_num;
     Vector *adj;
 } Graph;
 
@@ -22,7 +22,7 @@ void vector_init(Vector *vector);
 void vector_push_back(Vector *vector, Edge e);
 void vector_free(Vector *vector);
 
-Graph *create_graph(int verticies);
+Graph *create_graph(int vertices);
 void add_edge(Graph *graph, int from, int to, double weight, char *name);
 void free_graph(Graph *graph);
 void print_graph(Graph *graph); // TODO: for debugging purposes, remove later
