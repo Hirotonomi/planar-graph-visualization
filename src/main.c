@@ -1,8 +1,10 @@
+#include "graph.h"
 #include "utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
 
 typedef struct {
     char *in_file;
@@ -65,6 +67,15 @@ int main(int argc, char *argv[]) {
     printf("Algorytm: %d\n", args.algorithm);
     printf("Format binarny: %s\n", args.binary ? "tak" : "nie");
     printf("Czytelny dla człowieka: %s\n", args.human ? "tak" : "nie");
+  
+    int V = 5;
+    Graph *graph = create_graph(V);
+    add_edge(graph, 1, 2, 1.0, "AB");
+    add_edge(graph, 2, 3, 1.0, "BC");
+    add_edge(graph, 3, 4, 1.0, "CD");
+    add_edge(graph, 4, 2, 1.407, "DB");
+    print_graph(graph);
+  
 
     return EXIT_SUCCESS;
 }
