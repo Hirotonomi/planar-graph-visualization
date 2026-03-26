@@ -112,9 +112,19 @@ typedef struct Node {
 \end{lstlisting}
 Struct Node reprezentuje wierzchołek w grafie, zawierając informacje o jego
 współrzędnych (x, y) oraz unikalnym identyfikatorze (id).
-\section{tutte\_embedding.c oraz tutte\_embedding.h}
-
-
+\section{tutte\_embedding.c}
+\subsection{tutte\_embedding.c}
+Tutte\_embedding.c udostępnia następujące funkcje:
+\subsubsection{tutte\_embedding}
+Funkcja tutte\_embedding implementuje algorytm Tuttego do osadzania grafu w płaszczyźnie.
+\subsubsection{solve\_gauss}
+Funkcja solve\_gauss rozwiązuje układ równań liniowych metodą eliminacji
+Gaussa, która jest wykorzystywana w algorytmie Tuttego do obliczania
+współrzędnych wierzchołków.
+\subsubsection{find\_triangle}
+Funkcja find\_triangle znajduje trójkąt w grafie, który jest potrzebny do algorytmu Tuttego, aby ustalić pozycje trzech wierzchołków, które będą umieszczone na zewnątrz.
+\subsubsection{fix\_triangle}
+Funkcja fix\_triangle poprawia pozycje trzech wierzchołków, które zostały znalezione przez funkcję find\_triangle, aby zapewnić, że są one umieszczone na zewnątrz i tworzą trójkąt równoboczny, który jest potrzebny do algorytmu Tuttego.
 
 \end{document}
 
