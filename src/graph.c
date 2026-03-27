@@ -5,7 +5,7 @@
 
 // FIXME: redo error handling cause bad??
 // TODO: remove print_graph later, only for debugging purposes
-
+//---------------VECTORS----------------
 /**
  * Initializes a vector with an initial capacity of 4.
  * @param vector The vector to initialize.
@@ -48,6 +48,7 @@ void vector_free(Vector *vector) {
     free(vector->data);
 }
 
+//---------------GRAPH----------------
 /**
  * Creates a graph with the specified number of vertices.
  * @param vertices The number of vertices in the graph.
