@@ -1,6 +1,7 @@
 #include "graph.h"
 #include "utils.h"
 #include "node.h"
+#include "fileio.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,14 +70,26 @@ int main(int argc, char *argv[]) {
     printf("Format binarny: %s\n", args.binary ? "tak" : "nie");
     printf("Czytelny dla człowieka: %s\n", args.human ? "tak" : "nie");
   
-    int V = 5;
-    Graph *graph = create_graph(V);
-    add_edge(graph, 1, 2, 1.0, "AB");
-    add_edge(graph, 2, 3, 1.0, "BC");
-    add_edge(graph, 3, 4, 1.0, "CD");
-    add_edge(graph, 4, 2, 1.407, "DB");
-    print_graph(graph);
-  
+    printf("Wczytywanie grafu z pliku: %s...\n", args.in_file);
+    Graph *graph = load_graph_from_file(args.in_file);
 
+    if (graph == NULL) {
+        fprintf(stderr, "Błąd: Nie udało się wczytać grafu. Sprawdź czy plik istnieje i ma poprawny format.\n");
+        return EXIT_FAILURE;
+    }
+
+    printf("Graf wczytany pomyslnie!\n");
+    print_graph(graph);
+    if (args.algorithm==1){
+
+    }
+    else if (args.algorithm==2)
+    {
+        /* code */
+    }
+    //bez else bo obsługa sprawdzania algorytmu jest wcześniej
+    
+    free_graph(graph);
+  
     return EXIT_SUCCESS;
 }
