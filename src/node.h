@@ -2,9 +2,9 @@
 #define NODE_H
 
 typedef struct Node {
+    int id;
     double x;
     double y;
-    int id;
 } Node;
 
 // Struktura trzymająca końcowe wyniki położeń wierzchołków
