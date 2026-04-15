@@ -4,6 +4,7 @@
 #include <string.h>
 #define MAXN 1000 // FIX: set max to something different
 #define EPS 1e-9
+#define R 100 // circle radius
 
 int visited[MAXN];
 int par[MAXN];
@@ -52,7 +53,9 @@ void fix_cycle(Graph *g) {
         is_boundary[v] = 1;
 
         double ang = 2.0 * M_PI * i / cycle_size;
-        x[v] = cos(ang);
-        y[v] = sin(ang);
+        x[v] = R * cos(ang);
+        y[v] = R * sin(ang);
     }
 }
+
+void solve_gauss
