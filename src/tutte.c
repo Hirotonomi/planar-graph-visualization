@@ -6,6 +6,7 @@
 int visited[MAXN];
 int par[MAXN];
 int cycle[MAXN];
+int found_cycle;
 
 void store_cycle(int u, int v) {
     int cur = u;
@@ -15,27 +16,23 @@ void store_cycle(int u, int v) {
         cur = par[cur];
     }
     cycle[i++] = v;
+    if (i < 3) return;
+    found_cycle = 1;
     return;
 }
 
-int dfs_cycle(Graph *g, int v, int p) {
+void dfs_cycle(Graph *g, int v, int p) {
     visited[v] = 1;
     par[v] = p;
     for (int i = 0; i < g->adj[v].size; i++) {
         int u = g->adj[v].data[i].to;
         int found_cycle = 0;
         if (!visited[u]) {
-            found_cycle = dfs_cycle(g, u, v);
+            dfs_cycle(g, u, v);
+            if (found_cycle) return;
         } else {
-            found_cycle = 1;
             store_cycle(v, u);
-        }
-        // if already found cycle no point in doing rest of dfs
-        if (found_cycle == 1) {
-            return 1;
-        } else {
-            return -1; // -1 if no cycle found, use later for error
+            if (found_cycle) return;
         }
     }
-    return 0;
 }
