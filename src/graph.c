@@ -55,8 +55,17 @@ void vector_free(Vector *vector) {
  */
 Graph *create_graph(int vertices) {
     Graph *graph = malloc(sizeof(Graph));
+    if (!graph) {
+        perror("Failed to allocate memory for graph");
+        exit(EXIT_FAILURE);
+    }
     graph->vertices_num = vertices;
     graph->adj = malloc(vertices * sizeof(Vector));
+    if (!graph->adj) {
+        perror("Failed to allocate memory for graph adjacency list");
+        free(graph);
+        exit(EXIT_FAILURE);
+    }
     for (int i = 0; i < vertices; i++) {
         vector_init(&graph->adj[i]);
     }
