@@ -162,7 +162,7 @@ void solve(int n, double A[MAXN][MAXN], double b[MAXN], double x[MAXN]) {
     for (i = 1; i <= n; i++) {
         double pivot = A[i][i];
         if (fabs(pivot) < 1e-12) {
-            printf("Numerical issue: zero pivot");
+            printf("Problem numeryczny: zerowy element główny\n");
             return;
         }
         for (j = i; j <= n; j++) {
@@ -233,7 +233,7 @@ void find_embedding(Graph *g, GraphLayout *layout) {
         }
     }
     if (cycle_count == 0) {
-        printf("No cycle found");
+        printf("Nie znaleziono cyklu\n");
         return;
     }
     sort_cycles(g);

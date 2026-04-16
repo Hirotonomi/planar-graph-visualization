@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// TODO: remove print_graph later, only for debugging purposes
 //---------------VECTORS----------------
 /**
  * Initializes a vector with an initial capacity of 4.
@@ -14,7 +13,7 @@ void vector_init(Vector *vector) {
     vector->capacity = 4; // Initial capacity
     vector->data = malloc(vector->capacity * sizeof(Edge));
     if (!vector->data) {
-        perror("Failed to allocate memory for vector data");
+        perror("Nie udało się zaalokować pamięci dla danych wektora");
         exit(EXIT_FAILURE);
     }
 }
@@ -29,7 +28,7 @@ void vector_push_back(Vector *vector, Edge e) {
         vector->capacity *= 2;
         vector->data = realloc(vector->data, vector->capacity * sizeof(Edge));
         if (!vector->data) {
-            perror("Failed to reallocate memory for vector data");
+            perror("Nie udało się realokować pamięci dla danych wektora");
             exit(EXIT_FAILURE);
         }
     }
@@ -55,18 +54,18 @@ void vector_free(Vector *vector) {
  */
 Graph *create_graph(int vertices) {
     if (vertices <= 0) {
-        fprintf(stderr, "Invalid number of vertices: %d\n", vertices);
+        fprintf(stderr, "Nieprawidłowa liczba wierzchołków: %d\n", vertices);
         exit(EXIT_FAILURE);
     }
     Graph *graph = malloc(sizeof(Graph));
     if (!graph) {
-        perror("Failed to allocate memory for graph");
+        perror("Nie udało się zaalokować pamięci dla grafu");
         exit(EXIT_FAILURE);
     }
     graph->vertices_num = vertices;
     graph->adj = calloc((size_t)(vertices + 1), sizeof(Vector));
     if (!graph->adj) {
-        perror("Failed to allocate memory for graph adjacency list");
+        perror("Nie udało się zaalokować pamięci dla list sąsiedztwa grafu");
         free(graph);
         exit(EXIT_FAILURE);
     }
@@ -88,8 +87,8 @@ void add_edge(Graph *graph, int from, int to, double weight, char *name) {
     if (from <= 0 || to <= 0 || from > graph->vertices_num ||
         to > graph->vertices_num) {
         fprintf(stderr,
-                "Ignoring edge with invalid vertex id: %d -> %d (valid range: "
-                "1..%d)\n",
+                "Ignorowanie krawędzi z nieprawidłowym ID wierzchołka: %d -> "
+                "%d (dozwolony zakres: 1..%d)\n",
                 from, to, graph->vertices_num);
         return;
     }
@@ -98,7 +97,7 @@ void add_edge(Graph *graph, int from, int to, double weight, char *name) {
     e.weight = weight;
     e.name = strdup(name);
     if (!e.name) {
-        perror("Failed to allocate memory for edge name");
+        perror("Nie udało się zaalokować pamięci dla nazwy krawędzi");
         exit(EXIT_FAILURE);
     }
     Edge reverse_e;
@@ -106,7 +105,7 @@ void add_edge(Graph *graph, int from, int to, double weight, char *name) {
     reverse_e.weight = weight;
     reverse_e.name = strdup(name);
     if (!reverse_e.name) {
-        perror("Failed to allocate memory for reverse edge name");
+        perror("Nie udało się zaalokować pamięci dla nazwy krawędzi odwrotnej");
         exit(EXIT_FAILURE);
     }
     vector_push_back(&graph->adj[from], e);
@@ -124,19 +123,4 @@ void free_graph(Graph *graph) {
     }
     free(graph->adj);
     free(graph);
-}
-
-/**
- * Prints the graph for debugging purposes.
- * @param graph The graph to print.
- */
-void print_graph(Graph *graph) {
-    for (int i = 1; i <= graph->vertices_num; i++) {
-        printf("Vertex %d:\n", i);
-        for (int j = 0; j < graph->adj[i].size; j++) {
-            Edge e = graph->adj[i].data[j];
-            printf("  -> %d (weight: %.2f, name: %s)\n", e.to, e.weight,
-                   e.name);
-        }
-    }
 }

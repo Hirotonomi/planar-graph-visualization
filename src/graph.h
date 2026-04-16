@@ -21,6 +21,5 @@ typedef struct Graph {
 Graph *create_graph(int vertices);
 void add_edge(Graph *graph, int from, int to, double weight, char *name);
 void free_graph(Graph *graph);
-void print_graph(Graph *graph); // TODO: for debugging purposes, remove later
 
 #endif

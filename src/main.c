@@ -66,8 +66,7 @@ int main(int argc, char *argv[]) {
     int vertices_amount = find_max_vertex_id(args.in_file);
 
     if (vertices_amount < 0) {
-        fprintf(stderr,
-                "Blad: nie mozna otworzyc pliku wejściowego: %s\n",
+        fprintf(stderr, "Blad: nie mozna otworzyc pliku wejściowego: %s\n",
                 args.in_file);
         return EXIT_FAILURE;
     }
@@ -77,15 +76,6 @@ int main(int argc, char *argv[]) {
                         "wierzcholkow, same niedodatnie id wierzcholkow.\n");
         return EXIT_FAILURE;
     }
-
-    printf("Plik wejściowy: %s\n", args.in_file);
-    printf("Ścieżka wyjściowa: %s\n", args.out_path);
-    printf("Plik wyjściowy: %s\n", args.out_file);
-    printf("Algorytm: %d\n", args.algorithm);
-    printf("Format binarny: %s\n", args.binary ? "tak" : "nie");
-    printf("Czytelny dla człowieka: %s\n", args.human ? "tak" : "nie");
-
-    printf("Wczytywanie grafu z pliku: %s...\n", args.in_file);
     Graph *graph = load_graph_from_file(args.in_file, vertices_amount);
 
     if (graph == NULL) {
@@ -93,15 +83,10 @@ int main(int argc, char *argv[]) {
                         "istnieje i ma poprawny format.\n");
         return EXIT_FAILURE;
     }
-
-    printf("Graf wczytany pomyslnie!\n");
-    print_graph(graph);
-
     GraphLayout *layout = NULL;
 
     if (args.algorithm == 1) {
         //================================================================
-        printf("→ Algorytm 1 (Tutte)\n");
         layout = malloc(sizeof(GraphLayout));
         if (layout) {
             layout->count = graph->vertices_num;
@@ -145,7 +130,8 @@ int main(int argc, char *argv[]) {
         snprintf(full_path, sizeof(full_path), "%s/%s.bin", args.out_path,
                  args.out_file);
         save_layout_binary(full_path, layout);
-    } else if (args.human) {
+    }
+    if (args.human) {
         snprintf(full_path, sizeof(full_path), "%s/%s.txt", args.out_path,
                  args.out_file);
         save_layout_human(full_path, layout);

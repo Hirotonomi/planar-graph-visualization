@@ -57,8 +57,8 @@ oraz zapisywanie wyników obliczeń do pliku wyjściowego w formacie tekstowym l
 Nagłówek deklaruje cztery funkcje:
 
 \begin{lstlisting}
-Graph* load_graph_from_file(const char *filepath);
-int    find_max_vertex_id(FILE *file);
+Graph* load_graph_from_file(const char *filepath, int vertices_amount);
+int    find_max_vertex_id(const char *filepath);
 void   save_layout_human (const char *filepath, GraphLayout *layout);
 void   save_layout_binary(const char *filepath, GraphLayout *layout);
 \end{lstlisting}
@@ -66,27 +66,44 @@ void   save_layout_binary(const char *filepath, GraphLayout *layout);
 \subsection{fileio.c}
 
 \subsubsection{find\_max\_vertex\_id}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item const char *filepath --- ścieżka do pliku wejściowego
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item int --- \texttt{-1} gdy nie udało się otworzyć pliku, \texttt{0} gdy plik jest pusty lub bez dodatnich ID, albo największy ID wierzchołka
+\end{itemize}
 Pomocnicza funkcja przechodzi przez cały plik metodą \texttt{fscanf}, wczytując kolejne
 linie w formacie \texttt{<nazwa> <from> <to> <waga>} i wyznacza najwyższy identyfikator
 wierzchołka spośród wszystkich wartości \texttt{from} i \texttt{to}.
-Po zakończeniu pętli wywołuje \texttt{rewind(file)}, aby wskaźnik pliku powrócił na
-jego początek --- jest to niezbędne, ponieważ plik jest następnie wczytywany po raz
-drugi przez \texttt{load\_graph\_from\_file}. Funkcja zwraca \texttt{0} gdy plik jest
-pusty lub równy \texttt{NULL}.
 
 \subsubsection{load\_graph\_from\_file}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item const char *filepath --- ścieżka do pliku wejściowego
+	\item int vertices\_amount --- liczba wierzchołków grafu
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item Graph* --- wskaźnik na wczytany graf lub \texttt{NULL} w przypadku błędu
+\end{itemize}
 Funkcja otwiera plik o podanej ścieżce. W przypadku błędu wypisuje komunikat na
 \texttt{stderr} i zwraca \texttt{NULL}.\\
-Następnie wywołuje \texttt{find\_max\_vertex\_id}, aby ustalić wymaganą wielkość
-struktury grafu. Jeżeli wynik wynosi \texttt{0} (pusty plik), zwalnia zasoby i zwraca
-\texttt{NULL}.\\
-Graf tworzony jest z \texttt{vertices\_amount + 1} wierzchołkami --- indeks \texttt{0}
-pozostaje nieużywany, dzięki czemu identyfikatory wierzchołków z pliku wejściowego
-(zaczynające się od \texttt{1}) odpowiadają wprost indeksom tablicy \texttt{adj}.\\
+Graf tworzony jest z \texttt{vertices\_amount} wierzchołkami (identyfikatory \texttt{1..N}).\\
 Pętla \texttt{fscanf} wczytuje kolejne krawędzie i dodaje je do grafu wywołaniem
-\texttt{add\_edge}.
+\texttt{add\_edge}. Krawędzie z niedodatnimi identyfikatorami są ignorowane.
 
 \subsubsection{save\_layout\_human}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item const char *filepath --- ścieżka do pliku wyjściowego
+	\item GraphLayout *layout --- struktura z obliczonym layoutem
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item void
+\end{itemize}
 Funkcja otwiera plik do zapisu. W przypadku błędu wypisuje komunikat na \texttt{stderr}
 i kończy działanie.\\
 Najpierw zapisuje liczbę wierzchołków (\texttt{layout->count}) w pierwszej linii pliku.\\
@@ -97,7 +114,17 @@ Dla każdego węzła w strukturze \texttt{GraphLayout} zapisuje wiersz w formaci
 Po zakończeniu wypisuje potwierdzenie na standardowe wyjście.
 
 \subsubsection{save\_layout\_binary}
-Funkcja save\_layout\_binary zapisuje wyniki do pliku binarnego. Dla każdego wierzchołka
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item const char *filepath --- ścieżka do pliku wyjściowego
+	\item GraphLayout *layout --- struktura z obliczonym layoutem
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item void
+\end{itemize}
+Funkcja \texttt{save\_layout\_binary} zapisuje wyniki do pliku binarnego.
+Najpierw zapisuje liczbę wierzchołków (\texttt{int}, 4 bajty). Następnie dla każdego wierzchołka
 zapisuje kolejno jego identyfikator jako \texttt{int} (4 bajty), współrzędną
 $x$ jako \texttt{double} (8 bajtów) oraz współrzędną $y$ jako \texttt{double}
 (8 bajtów), co daje łącznie 20 bajtów na wierzchołek.
@@ -128,19 +155,19 @@ dane, aktualny rozmiar oraz pojemność tablicy.
 \subsubsection{struct Graph}
 \begin{lstlisting}
 typedef struct Graph {
-    int verticies_num;
+    int vertices_num;
     Vector *adj;
 } Graph;
 \end{lstlisting}
 Struct Graph reprezentuje graf nieskierowany. Zawiera ona liczbę wierzchołków
 oraz wskaźnik na tablicę wektorów, gdzie każdy wektor reprezentuje listę
-sąsiedztwa dla danego wierzchołka.
+sąsiedztwa dla danego wierzchołka. Identyfikatory wierzchołków są 1-indeksowane.
 \subsection{graph.c}
 Graph.c udostępnia następujące funkcje:
 \subsubsection{create\_graph}
 \textbf{Przyjmuje:}
 \begin{itemize}
-	\item int verticies\_num --- liczba wierzchołków w grafie
+	\item int vertices\_num --- liczba wierzchołków w grafie
 \end{itemize}
 \textbf{Zwraca:}
 \begin{itemize}
@@ -197,19 +224,20 @@ typedef struct {
 Struct \texttt{GraphLayout} przechowuje końcowe wyniki obliczeń --- tablicę \texttt{nodes}
 zawierającą \texttt{count} wierzchołków wraz z wyznaczonymi współrzędnymi. Jest to typ
 przekazywany do funkcji zapisu w \texttt{fileio.c} i zwracany przez funkcje algorytmów.
-\section{tutte\_embedding.c oraz tutte\_embedding.h}
-\subsection{tutte\_embedding.c}
+\section{tutte.c oraz tutte.h}
+\subsection{tutte.c}
 \subsubsection{find\_embedding}
+\textbf{Przyjmuje:}
 \begin{itemize}
 	\item struct Graph *graph --- wskaźnik na graf, dla którego obliczamy embedding
 	\item struct GraphLayout *layout --- wskaźnik na strukturę, do której zapiszemy wyniki
 \end{itemize}
+\textbf{Zwraca:}
 \begin{itemize}
 	\item void
 \end{itemize}
-Funkcja jako argument przyjmuje structy Graph oraz GraphLayout, liczy za
-pomocą tutte\_embeddingu koordynaty wierzchołków i zapisuje je do struktury
-GraphLayout.
+Funkcja jako argument przyjmuje struktury Graph oraz GraphLayout, liczy
+współrzędne metodą Tutte i zapisuje je do struktury GraphLayout.
 
 
 \section{spectral\_layout.c oraz spectral\_layout.h}
