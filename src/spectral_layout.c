@@ -46,6 +46,66 @@ static void copy_matrix(double **source, double **destination, int n) {
             destination[i][j] = source[i][j];
 }
 
+static void jacobi_eigen(double **symmetric_matrix_A, double **eigenvector_matrix_V, int n) {
+    identity_matrix(eigenvector_matrix_V, n);
+    int max_sweeps = 300;  
+    int sweep = 0;
+
+    while (sweep < max_sweeps) {
+        double max_off_diagonal = 0.0;
+        int pivot_row = 0;
+        int pivot_col = 1;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (fabs(symmetric_matrix_A[i][j]) > max_off_diagonal) {
+                    max_off_diagonal = fabs(symmetric_matrix_A[i][j]);
+                    pivot_row = i;
+                    pivot_col = j;
+                }
+            }
+        }
+
+        if (max_off_diagonal < 1e-10) break;  
+
+        double a_pp = symmetric_matrix_A[pivot_row][pivot_row];
+        double a_qq = symmetric_matrix_A[pivot_col][pivot_col];
+        double a_pq = symmetric_matrix_A[pivot_row][pivot_col];
+
+        double theta = 0.5 * atan2(2.0 * a_pq, a_qq - a_pp);
+        double cos_theta = cos(theta);
+        double sin_theta = sin(theta);
+
+        symmetric_matrix_A[pivot_row][pivot_row] = cos_theta*cos_theta * a_pp - 2*cos_theta*sin_theta * a_pq + sin_theta*sin_theta * a_qq;
+        symmetric_matrix_A[pivot_col][pivot_col] = sin_theta*sin_theta * a_pp + 2*cos_theta*sin_theta * a_pq + cos_theta*cos_theta * a_qq;
+
+        symmetric_matrix_A[pivot_row][pivot_col] = 0.0;
+        symmetric_matrix_A[pivot_col][pivot_row] = 0.0;
+
+        for (int i = 0; i < n; i++) {
+            if (i != pivot_row && i != pivot_col) {
+                double a_ip = symmetric_matrix_A[i][pivot_row];
+                double a_iq = symmetric_matrix_A[i][pivot_col];
+
+                symmetric_matrix_A[i][pivot_row] = cos_theta * a_ip - sin_theta * a_iq;
+                symmetric_matrix_A[i][pivot_col] = sin_theta * a_ip + cos_theta * a_iq;
+
+                symmetric_matrix_A[pivot_row][i] = symmetric_matrix_A[i][pivot_row];
+                symmetric_matrix_A[pivot_col][i] = symmetric_matrix_A[i][pivot_col];
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            double v_ip = eigenvector_matrix_V[i][pivot_row];
+            double v_iq = eigenvector_matrix_V[i][pivot_col];
+            eigenvector_matrix_V[i][pivot_row] = cos_theta * v_ip - sin_theta * v_iq;
+            eigenvector_matrix_V[i][pivot_col] = sin_theta * v_ip + cos_theta * v_iq;
+        }
+
+        sweep++;
+    }
+}
+
 void print_matrix(double **matrix, int n) {
     printf("\n--- Macierz Laplace'a (%d x %d) ---\n", n, n);
     
@@ -74,20 +134,44 @@ void free_matrix(double **matrix, int n) {
     free(matrix);
 }
 
-GraphLayout*/ void solve_using_spectral_layout(Graph *graph)
+GraphLayout* solve_using_spectral_layout(Graph *graph)
 {
     if (graph == NULL || graph->vertices_num < 2) {
-        fprintf(stderr, "Błąd: Graf jest pusty lub ma za mało wierzchołków do spectral layout.\n");
-        // return NULL;
+        fprintf(stderr, "Bląd: Graf jest pusty lub ma za malo wierzcholkow do spectral layout.\n");
+        return NULL;
     }
 
-    double **L = create_laplacian_matrix(graph);
-    //(debug)
     int n = graph->vertices_num;
-    print_laplacian_matrix(L, n);
-    //debug
 
-    free_matrix(L, n);
-    // free_eigenvectors(eigenvectors, 2);   
-    // return layout;
+    double **laplacian = create_laplacian_matrix(graph);
+    print_matrix(laplacian, n);
+
+    // use this bit in the eigenproblem solver
+    double **symmetric_matrix_A = malloc(n * sizeof(double*));
+    double **eigenvector_matrix_V = malloc(n * sizeof(double*));
+    for (int i = 0; i < n; i++) {
+        symmetric_matrix_A[i] = malloc(n * sizeof(double));
+        eigenvector_matrix_V[i] = malloc(n * sizeof(double));
+    }
+    copy_matrix(laplacian, symmetric_matrix_A, n);
+    identity_matrix(eigenvector_matrix_V, n);
+
+    jacobi_eigen(symmetric_matrix_A, eigenvector_matrix_V, n);
+
+    printf("\n--- Macierz A (wartości własne na diagonalach) ---\n");
+    print_matrix(symmetric_matrix_A, n);
+
+    printf("\n--- Macierz V (wektory własne w kolumnach) ---\n");
+    print_matrix(eigenvector_matrix_V, n);
+
+
+    free_matrix(laplacian, n);
+    for (int i = 0; i < n; i++) {
+        free(symmetric_matrix_A[i]);
+        free(eigenvector_matrix_V[i]);
+    }
+    free(symmetric_matrix_A);
+    free(eigenvector_matrix_V);
+
+    return NULL;
 }
