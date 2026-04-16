@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#define MAXN 1000 // FIX: set max to something different
+#define MAXN 2000 // 1000 takes ~1s 10^9 operations, 2000 takes ~8s
 #define EPS 1e-9
 #define R 100 // circle radius
 #define MAXCYCLES 100
@@ -12,12 +12,11 @@ int visited[MAXN];
 int par[MAXN];
 int cycles[MAXCYCLES][MAXN];
 
-// int found_cycle;
 int cycle_count;
 int cycle_sizes[MAXCYCLES];
 
 int is_boundary[MAXN];
-double x[MAXN], y[MAXN];
+Node nodes[MAXN];
 
 double A[MAXN][MAXN];
 double bx[MAXN], by[MAXN];
@@ -57,23 +56,28 @@ void dfs_cycles(Graph *g, int v, int p) {
     }
 }
 
-int has_chord(Graph *g, int cycle[], int k) {
-    for (int i = 0; i < k; i++) {
+int has_chord(Graph *g, int cycle[], int size) {
+    int in_cycle[MAXN] = {0};
+    for (int i = 0; i < size; i++) {
+        in_cycle[cycle[i]] = 1;
+    }
+
+    for (int i = 0; i < size; i++) {
         int u = cycle[i];
 
         for (int j = 0; j < g->adj[u].size; j++) {
             int v = g->adj[u].data[j].to;
+            if (!in_cycle[v]) continue;
 
-            for (int t = 0; t < k; t++) {
-                if (cycle[t] == v) {
-                    int next = (i + 1) % k;
-                    int prev = (i - 1 + k) % k;
+            int prev = cycle[(i - 1 + size) % size];
+            int next = cycle[(i + 1) % size];
 
-                    if (t != next && t != prev) return 1;
-                }
+            if (v != prev && v != next) {
+                return 1;
             }
         }
     }
+
     return 0;
 }
 
@@ -85,12 +89,12 @@ int cycle_score(Graph *g, int id) {
     return len - penalty;
 }
 
+// selection sort
 void sort_cycles(Graph *g) {
     for (int i = 0; i < cycle_count; i++) {
         for (int j = i + 1; j < cycle_count; j++) {
             if (cycle_score(g, j) > cycle_score(g, i)) {
 
-                // swap cycles
                 int tmp[MAXN], tmp_size;
 
                 memcpy(tmp, cycles[i], sizeof(tmp));
@@ -105,16 +109,18 @@ void sort_cycles(Graph *g) {
     }
 }
 void fix_cycle(int cycle[], int size) {
-    for (int i = 0; i < size; i++) {
-        is_boundary[cycle[i]] = 0;
+    for (int i = 0; i < MAXN; i++) {
+        is_boundary[i] = 0;
+        nodes[i].x = nodes[i].y = 0.0;
     }
     for (int i = 0; i < size; i++) {
         int v = cycle[i];
         is_boundary[v] = 1;
         double angle = 2.0 * M_PI * ((double)i / size);
 
-        x[v] = R * cos(angle);
-        y[v] = R * sin(angle);
+        nodes[v].x = R * cos(angle);
+        nodes[v].y = R * sin(angle);
+        nodes[v].id = v;
     }
 }
 
@@ -129,8 +135,8 @@ void build_linear_equations(Graph *g) {
     for (int i = 0; i < n; i++) {
         if (is_boundary[i]) {
             A[i][i] = 1.0;
-            bx[i] = x[i];
-            by[i] = y[i];
+            bx[i] = nodes[i].x;
+            by[i] = nodes[i].y;
         } else {
             int deg = g->adj[i].size;
             A[i][i] = (double)deg;
@@ -148,34 +154,27 @@ void build_linear_equations(Graph *g) {
 // FIX: usunąć komentarz XD (oraz może sprawdzić gaussa?)
 void solve(int n, double A[MAXN][MAXN], double b[MAXN], double x[MAXN]) {
     int i, j, k;
-
     for (i = 0; i < n; i++) {
-
-        // pivot
         double pivot = A[i][i];
         if (fabs(pivot) < 1e-12) {
-            printf("Numerical issue: zero pivot\n");
+            printf("Numerical issue: zero pivot");
             return;
         }
-
-        // normalize row
-        for (j = i; j < n; j++) A[i][j] /= pivot;
-
+        for (j = i; j < n; j++) {
+            A[i][j] /= pivot;
+        }
         b[i] /= pivot;
-
-        // eliminate other rows
         for (k = 0; k < n; k++) {
-            if (k == i) continue;
-
+            if (k == i) {
+                continue;
+            }
             double factor = A[k][i];
-
-            for (j = i; j < n; j++) A[k][j] -= factor * A[i][j];
-
+            for (j = i; j < n; j++) {
+                A[k][j] -= factor * A[i][j];
+            }
             b[k] -= factor * b[i];
         }
     }
-
-    // extract solution
     for (i = 0; i < n; i++) x[i] = b[i];
 }
 
@@ -241,11 +240,13 @@ void find_embedding(Graph *g) {
         solve(n, A, bx, rx);
         build_linear_equations(g);
         solve(n, A, by, ry);
+        for (int v = 0; v < g->vertices_num; v++) {
+            nodes[v].x = rx[v];
+            nodes[v].y = ry[v];
+        }
 
         if (!has_crossing(g, rx, ry)) {
-            printf("Planar embedding found:\n");
-            for (int i = 0; i < n; i++)
-                printf("%d: (%f, %f)\n", i, rx[i], ry[i]);
+            printf("Planar embedding found: cycle size %d\n", cycle_sizes[i]);
             return;
         }
     }
