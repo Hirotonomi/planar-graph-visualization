@@ -5,7 +5,7 @@
 #include "graph.h"
 #include "node.h"
 
-Graph* load_graph_from_file(const char *filepath);
+Graph* load_graph_from_file(const char *filepath, int vertices_amount);
 
 int find_max_vertex_id(FILE *file);
 

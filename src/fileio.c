@@ -4,34 +4,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Graph* load_graph_from_file(const char *filepath) {
+Graph* load_graph_from_file(const char *filepath, int vertices_amount) {
     FILE *file = fopen(filepath, "r");
-    if (!file) {perror("Błąd: Nie udało się otworzyć pliku wejściowego");
+    if (!file) {perror("Błąd: Nie udało się otworzyć pliku wejściowego do odczytu danych");
         return NULL;
     }
-
-    int vertices_amount = find_max_vertex_id(file);
-
-    if (vertices_amount == 0) {fprintf(stderr, "Błąd: Plik jest pusty lub ma zły format.\n");
-        fclose(file);
-        return NULL;
-    }
-
-    Graph *graph = create_graph(vertices_amount + 1);//TODO contemplate if vector on index 0 of *adj is ok to be perma empty
+    Graph *graph = create_graph(vertices_amount + 1);
 
     char name[256];
     int from, to;
     double weight;
 
     while (fscanf(file, "%255s %d %d %lf", name, &from, &to, &weight) == 4) {
+        if (from < 0 || to < 0) {
+            fprintf(stderr, "Ostrzeżenie: Ignorowanie krawędzi z ujemnym ID wierzchołka.\n");
+            continue;
+        }
         add_edge(graph, from, to, weight, name);
     }
 
     fclose(file);
     return graph;
 }
-//TODO, dodać sprawdzenie from i to czy liczby są dodatnimi intami
-int find_max_vertex_id(FILE *file) {
+int find_max_vertex_id(const char *filepath) {
+    FILE *file = fopen(filepath, "r");
     if (file == NULL) return 0;
 
     char name[256];
@@ -43,8 +39,7 @@ int find_max_vertex_id(FILE *file) {
         if (from > max_vertex) max_vertex = from;
         if (to > max_vertex) max_vertex = to;
     }
-//potrzebne zawrócić plik, na tym się wyjebałem w jimp1kolos
-    rewind(file);
+    fclose(file);
     return max_vertex;
 }
 

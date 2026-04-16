@@ -65,6 +65,13 @@ int main(int argc, char *argv[]) {
         args.binary = 1;
     }
 
+    int vertices_amount = find_max_vertex_id(args.in_file);
+    
+    if (vertices_amount == 0) {
+        fprintf(stderr, "Błąd: ma zły format, mozliwe: 1 lub 0 wierzcholkow, same niedodatnie id wierzcholkow.\n");
+        return EXIT_FAILURE;
+    }
+
     printf("Plik wejściowy: %s\n", args.in_file);
     printf("Ścieżka wyjściowa: %s\n", args.out_path);
     printf("Plik wyjściowy: %s\n", args.out_file);
@@ -73,10 +80,10 @@ int main(int argc, char *argv[]) {
     printf("Czytelny dla człowieka: %s\n", args.human ? "tak" : "nie");
   
     printf("Wczytywanie grafu z pliku: %s...\n", args.in_file);
-    Graph *graph = load_graph_from_file(args.in_file);
+    Graph *graph = load_graph_from_file(args.in_file, vertices_amount);
 
     if (graph == NULL) {
-        fprintf(stderr, "Błąd: Nie udało się wczytać grafu. Sprawdź czy plik istnieje i ma poprawny format.\n");
+        fprintf(stderr, "Błąd: Nie udało się wczytac grafu. Sprawdź czy plik istnieje i ma poprawny format.\n");
         return EXIT_FAILURE;
     }
 
