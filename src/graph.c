@@ -54,10 +54,23 @@ void vector_free(Vector *vector) {
  * @return A pointer to the created graph.
  */
 Graph *create_graph(int vertices) {
+    if (vertices <= 0) {
+        fprintf(stderr, "Invalid number of vertices: %d\n", vertices);
+        exit(EXIT_FAILURE);
+    }
     Graph *graph = malloc(sizeof(Graph));
+    if (!graph) {
+        perror("Failed to allocate memory for graph");
+        exit(EXIT_FAILURE);
+    }
     graph->vertices_num = vertices;
-    graph->adj = malloc(vertices * sizeof(Vector));
-    for (int i = 0; i < vertices; i++) {
+    graph->adj = calloc((size_t)(vertices + 1), sizeof(Vector));
+    if (!graph->adj) {
+        perror("Failed to allocate memory for graph adjacency list");
+        free(graph);
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 1; i <= vertices; i++) {
         vector_init(&graph->adj[i]);
     }
     return graph;
@@ -72,6 +85,14 @@ Graph *create_graph(int vertices) {
  * @param name The name of the edge.
  */
 void add_edge(Graph *graph, int from, int to, double weight, char *name) {
+    if (from <= 0 || to <= 0 || from > graph->vertices_num ||
+        to > graph->vertices_num) {
+        fprintf(stderr,
+                "Ignoring edge with invalid vertex id: %d -> %d (valid range: "
+                "1..%d)\n",
+                from, to, graph->vertices_num);
+        return;
+    }
     Edge e;
     e.to = to;
     e.weight = weight;
@@ -98,7 +119,7 @@ void add_edge(Graph *graph, int from, int to, double weight, char *name) {
  * @param graph The graph to free.
  */
 void free_graph(Graph *graph) {
-    for (int i = 0; i < graph->vertices_num; i++) {
+    for (int i = 1; i <= graph->vertices_num; i++) {
         vector_free(&graph->adj[i]);
     }
     free(graph->adj);
@@ -110,7 +131,7 @@ void free_graph(Graph *graph) {
  * @param graph The graph to print.
  */
 void print_graph(Graph *graph) {
-    for (int i = 0; i < graph->vertices_num; i++) {
+    for (int i = 1; i <= graph->vertices_num; i++) {
         printf("Vertex %d:\n", i);
         for (int j = 0; j < graph->adj[i].size; j++) {
             Edge e = graph->adj[i].data[j];

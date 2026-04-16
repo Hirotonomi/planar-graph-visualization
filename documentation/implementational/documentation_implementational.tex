@@ -89,6 +89,7 @@ Pętla \texttt{fscanf} wczytuje kolejne krawędzie i dodaje je do grafu wywołan
 \subsubsection{save\_layout\_human}
 Funkcja otwiera plik do zapisu. W przypadku błędu wypisuje komunikat na \texttt{stderr}
 i kończy działanie.\\
+Najpierw zapisuje liczbę wierzchołków (\texttt{layout->count}) w pierwszej linii pliku.\\
 Dla każdego węzła w strukturze \texttt{GraphLayout} zapisuje wiersz w formacie:
 \begin{center}
 	\texttt{<id> <x> <y>}

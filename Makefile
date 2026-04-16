@@ -2,10 +2,12 @@
 
 CC := gcc
 CFLAGS := -Wall -Wextra
+LDLIBS := -lm
 
 SRC_DIR := src
 BIN_DIR := bin
 BUILD_DIR := build
+BUILD_STAMP := $(BUILD_DIR)/.dir
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 TARGET = $(BIN_DIR)/planar_graph
@@ -14,16 +16,20 @@ TARGET = $(BIN_DIR)/planar_graph
 all: $(TARGET)
 
 # Create directories
-$(BUILD_DIR) $(BIN_DIR):
+$(BUILD_STAMP):
+	@mkdir -p $(BUILD_DIR)
+	@touch $@
+
+$(BIN_DIR):
 	@mkdir -p $@
 
 # Compile object files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_STAMP)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Link executable
 $(TARGET): $(OBJECTS) | $(BIN_DIR)
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(CC) $(OBJECTS) $(LDFLAGS) $(LDLIBS) -o $@
 	@echo "Build complete: $@"
 
 # Alias for all

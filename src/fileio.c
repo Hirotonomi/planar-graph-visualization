@@ -10,15 +10,15 @@ Graph* load_graph_from_file(const char *filepath, int vertices_amount) {
     if (!file) {perror("Błąd: Nie udało się otworzyć pliku wejściowego do odczytu danych");
         return NULL;
     }
-    Graph *graph = create_graph(vertices_amount + 1);
+    Graph *graph = create_graph(vertices_amount);
 
     char *name = NULL;
     int from, to;
     double weight;
 
     while (fscanf(file, "%ms %d %d %lf", &name, &from, &to, &weight) == 4) {
-        if (from < 0 || to < 0) {
-            fprintf(stderr, "Ostrzeżenie: Ignorowanie krawędzi z ujemnym ID wierzchołka.\n");
+        if (from <= 0 || to <= 0) {
+            fprintf(stderr, "Ostrzeżenie: Ignorowanie krawędzi z niedodatnim ID wierzchołka.\n");
             free(name);
             continue;
         }
@@ -33,7 +33,7 @@ Graph* load_graph_from_file(const char *filepath, int vertices_amount) {
 }
 int find_max_vertex_id(const char *filepath) {
     FILE *file = fopen(filepath, "r");
-    if (file == NULL) return 0;
+    if (file == NULL) return -1;
 
     int from, to;
     double weight;
@@ -50,11 +50,12 @@ int find_max_vertex_id(const char *filepath) {
 void save_layout_human(const char *filepath, GraphLayout *layout) {
     FILE *f = fopen(filepath, "w");
     if (!f) {perror("Nie udało się otworzyć pliku do zapisu");return;}
-    
+
+    fprintf(f, "%d\n", layout->count);
     for (int i = 0; i < layout->count; i++) {
         fprintf(f, "%d %f %f\n", layout->nodes[i].id, layout->nodes[i].x, layout->nodes[i].y);
     }
-    
+
     fclose(f);
     printf("Wyniki zapisano pomyślnie do: %s\n", filepath);
 }
