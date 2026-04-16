@@ -118,14 +118,7 @@ int main(int argc, char *argv[]) {
         }
         //===============================================================
     } else if (args.algorithm == 2) {
-
-        double **L = create_laplacian_matrix(graph);
-
-        // Wyświetlenie do debugowania
-        print_laplacian_matrix(L, graph->vertices_num);
-
-
-        free_matrix(L, graph->vertices_num);
+        solve_using_spectral_layout(graph);
         // to delete =============================================
         printf("→ Algorytm 2 (Spectral) - dummy layout\n");
         layout = malloc(sizeof(GraphLayout));

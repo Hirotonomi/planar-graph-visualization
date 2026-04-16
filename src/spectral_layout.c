@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "graph.h"
+#include "node.h"
 
 double** create_laplacian_matrix(Graph *graph) {
     int n = graph->vertices_num;
@@ -55,4 +56,22 @@ void free_matrix(double **matrix, int n) {
         free(matrix[i]);
     }
     free(matrix);
+}
+
+/*GraphLayout*/ void solve_using_spectral_layout(Graph *graph)
+{
+    if (graph == NULL || graph->vertices_num < 2) {
+        fprintf(stderr, "Błąd: Graf jest pusty lub ma za mało wierzchołków do spectral layout.\n");
+        // return NULL;
+    }
+
+    double **L = create_laplacian_matrix(graph);
+    //(debug)
+    int n = graph->vertices_num;
+    print_laplacian_matrix(L, n);
+    //debug
+
+    free_matrix(L, n);
+    // free_eigenvectors(eigenvectors, 2);   
+    // return layout;
 }
