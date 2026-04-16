@@ -78,7 +78,6 @@ int main(int argc, char *argv[]) {
                         "wierzcholkow, same niedodatnie id wierzcholkow.\n");
         return EXIT_FAILURE;
     }
-
     Graph *graph = load_graph_from_file(args.in_file, vertices_amount);
 
     if (graph == NULL) {
