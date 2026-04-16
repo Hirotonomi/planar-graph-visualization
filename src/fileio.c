@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L // Wymagane dla %ms na Linuxie (Mateusz oceń)
 #include "node.h"
 #include "fileio.h"
 #include "graph.h"
@@ -11,16 +12,20 @@ Graph* load_graph_from_file(const char *filepath, int vertices_amount) {
     }
     Graph *graph = create_graph(vertices_amount + 1);
 
-    char name[256];
+    char *name = NULL;
     int from, to;
     double weight;
 
-    while (fscanf(file, "%255s %d %d %lf", name, &from, &to, &weight) == 4) {
+    while (fscanf(file, "%ms %d %d %lf", &name, &from, &to, &weight) == 4) {
         if (from < 0 || to < 0) {
             fprintf(stderr, "Ostrzeżenie: Ignorowanie krawędzi z ujemnym ID wierzchołka.\n");
+            free(name);
             continue;
         }
+        
         add_edge(graph, from, to, weight, name);
+        free(name); 
+        name = NULL; 
     }
 
     fclose(file);
@@ -30,12 +35,11 @@ int find_max_vertex_id(const char *filepath) {
     FILE *file = fopen(filepath, "r");
     if (file == NULL) return 0;
 
-    char name[256];
     int from, to;
     double weight;
     int max_vertex = 0;
 
-    while (fscanf(file, "%255s %d %d %lf", name, &from, &to, &weight) == 4) {
+    while (fscanf(file, "%*s %d %d %lf", &from, &to, &weight) == 4) {
         if (from > max_vertex) max_vertex = from;
         if (to > max_vertex) max_vertex = to;
     }
