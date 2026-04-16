@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// FIXME: redo error handling cause bad??
 // TODO: remove print_graph later, only for debugging purposes
 
 /**

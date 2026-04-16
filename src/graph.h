@@ -18,10 +18,6 @@ typedef struct Graph {
     Vector *adj;
 } Graph;
 
-void vector_init(Vector *vector);
-void vector_push_back(Vector *vector, Edge e);
-void vector_free(Vector *vector);
-
 Graph *create_graph(int vertices);
 void add_edge(Graph *graph, int from, int to, double weight, char *name);
 void free_graph(Graph *graph);

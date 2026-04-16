@@ -91,7 +91,7 @@ Funkcja otwiera plik do zapisu. W przypadku błędu wypisuje komunikat na \textt
 i kończy działanie.\\
 Dla każdego węzła w strukturze \texttt{GraphLayout} zapisuje wiersz w formacie:
 \begin{center}
-\texttt{<id> <x> <y>}
+	\texttt{<id> <x> <y>}
 \end{center}
 Po zakończeniu wypisuje potwierdzenie na standardowe wyjście.
 
@@ -136,21 +136,40 @@ oraz wskaźnik na tablicę wektorów, gdzie każdy wektor reprezentuje listę
 sąsiedztwa dla danego wierzchołka.
 \subsection{graph.c}
 Graph.c udostępnia następujące funkcje:
-\subsubsection{vector\_init}
-Funkcja vector\_init inicjalizuje wektor, ustawiając jego rozmiar na 0,
-pojemność na 4 oraz alokując pamięć dla danych.
-\subsubsection{vector\_push\_back}
-Funkcja vector\_push\_back dodaje krawędź do wektora. Jeśli rozmiar wektora
-osiągnie jego pojemność, funkcja podwaja pojemność i realokuje pamięć dla
-danych.
-\subsubsection{vector\_free}
-Funkcja vector\_free zwalnia pamięć zajmowaną przez dane wektora.
 \subsubsection{create\_graph}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item int verticies\_num --- liczba wierzchołków w grafie
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item struct Graph --- wskaźnik na utworzony graf lub \texttt{NULL} w przypadku błędu alokacji pamięci.
+\end{itemize}
 Funkcja create\_graph tworzy graf o określonej liczbie wierzchołków, alokując
 pamięć dla tablicy wektorów i inicjalizując każdy wektor.
 \subsubsection{add\_edge}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item struct Graph *graph --- wskaźnik na graf, do którego dodajemy krawędź
+	\item int from --- identyfikator wierzchołka początkowego
+	\item int to --- identyfikator wierzchołka docelowego
+	\item double weight --- waga krawędzi
+	\item const char *name --- nazwa krawędzi
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item void
+\end{itemize}
 Funkcja add\_edge dodaje krawędź do grafu, aktualizując listę sąsiedztwa dla obu wierzchołków (ponieważ graf jest nieskierowany).
 \subsubsection{free\_graph}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item struct Graph *graph --- wskaźnik na graf do zwolnienia
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item void
+\end{itemize}
 Funkcja free\_graph zwalnia pamięć zajmowaną przez graf, w tym pamięć dla list
 sąsiedztwa i samego grafu.
 \section{node.h}
@@ -179,17 +198,18 @@ zawierającą \texttt{count} wierzchołków wraz z wyznaczonymi współrzędnymi
 przekazywany do funkcji zapisu w \texttt{fileio.c} i zwracany przez funkcje algorytmów.
 \section{tutte\_embedding.c oraz tutte\_embedding.h}
 \subsection{tutte\_embedding.c}
-Tutte\_embedding.c udostępnia następujące funkcje:
-\subsubsection{tutte\_embedding}
-Funkcja tutte\_embedding implementuje algorytm Tuttego do osadzania grafu w płaszczyźnie.
-\subsubsection{solve\_gauss}
-Funkcja solve\_gauss rozwiązuje układ równań liniowych metodą eliminacji
-Gaussa, która jest wykorzystywana w algorytmie Tuttego do obliczania
-współrzędnych wierzchołków.
-\subsubsection{find\_triangle}
-Funkcja find\_triangle znajduje trójkąt w grafie, który jest potrzebny do algorytmu Tuttego, aby ustalić pozycje trzech wierzchołków, które będą umieszczone na zewnątrz.
-\subsubsection{fix\_triangle}
-Funkcja fix\_triangle poprawia pozycje trzech wierzchołków, które zostały znalezione przez funkcję find\_triangle, aby zapewnić, że są one umieszczone na zewnątrz i tworzą trójkąt równoboczny, który jest potrzebny do algorytmu Tuttego.
+\subsubsection{find\_embedding}
+\begin{itemize}
+	\item struct Graph *graph --- wskaźnik na graf, dla którego obliczamy embedding
+	\item struct GraphLayout *layout --- wskaźnik na strukturę, do której zapiszemy wyniki
+\end{itemize}
+\begin{itemize}
+	\item void
+\end{itemize}
+Funkcja jako argument przyjmuje structy Graph oraz GraphLayout, liczy za
+pomocą tutte\_embeddingu koordynaty wierzchołków i zapisuje je do struktury
+GraphLayout.
+
 
 \section{spectral\_layout.c oraz spectral\_layout.h}
 \subsection{spectral\_layout.c}
