@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
         case 'a':
             args.algorithm = parse_algorithm(optarg);
             if (args.algorithm == -1) {
-                fprintf(stderr, "Taki algorytm nie jest obsługiwany\n");
+                fprintf(stderr, "Taki algorytm nie jest obslugiwany\n");
                 return EXIT_FAILURE;
             }
             break;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (vertices_amount == 0) {
-        fprintf(stderr, "Blad: plik ma zły format, mozliwe: 1 lub 0 "
+        fprintf(stderr, "Blad: plik ma zly format, mozliwe: 1 lub 0 "
                         "wierzcholkow, same niedodatnie id wierzcholkow.\n");
         return EXIT_FAILURE;
     }
@@ -84,13 +84,13 @@ int main(int argc, char *argv[]) {
     printf("Plik wyjściowy: %s\n", args.out_file);
     printf("Algorytm: %d\n", args.algorithm);
     printf("Format binarny: %s\n", args.binary ? "tak" : "nie");
-    printf("Czytelny dla człowieka: %s\n", args.human ? "tak" : "nie");
+    printf("Czytelny dla czlowieka: %s\n", args.human ? "tak" : "nie");
 
     printf("Wczytywanie grafu z pliku: %s...\n", args.in_file);
     Graph *graph = load_graph_from_file(args.in_file, vertices_amount);
 
     if (graph == NULL) {
-        fprintf(stderr, "Błąd: Nie udało się wczytac grafu. Sprawdź czy plik "
+        fprintf(stderr, "Bląd: Nie udalo się wczytac grafu. Sprawdź czy plik "
                         "istnieje i ma poprawny format.\n");
         return EXIT_FAILURE;
     }
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
     //==========================================================
 
     if (layout == NULL || layout->nodes == NULL) {
-        fprintf(stderr, "Błąd: Nie udało się stworzyć layoutu.\n");
+        fprintf(stderr, "Bląd: Nie udało się stworzyć layoutu.\n");
         free_graph(graph);
         return EXIT_FAILURE;
     }

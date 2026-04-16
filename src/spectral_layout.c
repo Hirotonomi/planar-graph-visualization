@@ -158,10 +158,10 @@ GraphLayout* solve_using_spectral_layout(Graph *graph)
 
     jacobi_eigen(symmetric_matrix_A, eigenvector_matrix_V, n);
 
-    printf("\n--- Macierz A (wartości własne na diagonalach) ---\n");
+    printf("\n--- Macierz A (wartości wlasne na diagonalach) ---\n");
     print_matrix(symmetric_matrix_A, n);
 
-    printf("\n--- Macierz V (wektory własne w kolumnach) ---\n");
+    printf("\n--- Macierz V (wektory wlasne w kolumnach) ---\n");
     print_matrix(eigenvector_matrix_V, n);
 
 
