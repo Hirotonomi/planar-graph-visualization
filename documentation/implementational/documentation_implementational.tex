@@ -49,6 +49,58 @@ przeprowadzenia algorytmów.
 
 \section{fileio.c oraz fileio.h}
 
+Pliki \texttt{fileio.c} i \texttt{fileio.h} odpowiadają za wczytywanie grafu z pliku tekstowego
+oraz zapisywanie wyników obliczeń do pliku wyjściowego w formacie tekstowym lub binarnym.
+
+\subsection{fileio.h}
+
+Nagłówek deklaruje cztery funkcje:
+
+\begin{lstlisting}
+Graph* load_graph_from_file(const char *filepath);
+int    find_max_vertex_id(FILE *file);
+void   save_layout_human (const char *filepath, GraphLayout *layout);
+void   save_layout_binary(const char *filepath, GraphLayout *layout);
+\end{lstlisting}
+
+\subsection{fileio.c}
+
+\subsubsection{find\_max\_vertex\_id}
+Pomocnicza funkcja przechodzi przez cały plik metodą \texttt{fscanf}, wczytując kolejne
+linie w formacie \texttt{<nazwa> <from> <to> <waga>} i wyznacza najwyższy identyfikator
+wierzchołka spośród wszystkich wartości \texttt{from} i \texttt{to}.
+Po zakończeniu pętli wywołuje \texttt{rewind(file)}, aby wskaźnik pliku powrócił na
+jego początek --- jest to niezbędne, ponieważ plik jest następnie wczytywany po raz
+drugi przez \texttt{load\_graph\_from\_file}. Funkcja zwraca \texttt{0} gdy plik jest
+pusty lub równy \texttt{NULL}.
+
+\subsubsection{load\_graph\_from\_file}
+Funkcja otwiera plik o podanej ścieżce. W przypadku błędu wypisuje komunikat na
+\texttt{stderr} i zwraca \texttt{NULL}.\\
+Następnie wywołuje \texttt{find\_max\_vertex\_id}, aby ustalić wymaganą wielkość
+struktury grafu. Jeżeli wynik wynosi \texttt{0} (pusty plik), zwalnia zasoby i zwraca
+\texttt{NULL}.\\
+Graf tworzony jest z \texttt{vertices\_amount + 1} wierzchołkami --- indeks \texttt{0}
+pozostaje nieużywany, dzięki czemu identyfikatory wierzchołków z pliku wejściowego
+(zaczynające się od \texttt{1}) odpowiadają wprost indeksom tablicy \texttt{adj}.\\
+Pętla \texttt{fscanf} wczytuje kolejne krawędzie i dodaje je do grafu wywołaniem
+\texttt{add\_edge}.
+
+\subsubsection{save\_layout\_human}
+Funkcja otwiera plik do zapisu. W przypadku błędu wypisuje komunikat na \texttt{stderr}
+i kończy działanie.\\
+Dla każdego węzła w strukturze \texttt{GraphLayout} zapisuje wiersz w formacie:
+\begin{center}
+	\texttt{<id> <x> <y>}
+\end{center}
+Po zakończeniu wypisuje potwierdzenie na standardowe wyjście.
+
+\subsubsection{save\_layout\_binary}
+Funkcja save\_layout\_binary zapisuje wyniki do pliku binarnego. Dla każdego wierzchołka
+zapisuje kolejno jego identyfikator jako \texttt{int} (4 bajty), współrzędną
+$x$ jako \texttt{double} (8 bajtów) oraz współrzędną $y$ jako \texttt{double}
+(8 bajtów), co daje łącznie 20 bajtów na wierzchołek.
+
 \section{graph.c oraz graph.h}
 \subsection{Graph.h}
 Graph.h udostępnia następujące structy:
@@ -84,37 +136,112 @@ oraz wskaźnik na tablicę wektorów, gdzie każdy wektor reprezentuje listę
 sąsiedztwa dla danego wierzchołka.
 \subsection{graph.c}
 Graph.c udostępnia następujące funkcje:
-\subsubsection{vector\_init}
-Funkcja vector\_init inicjalizuje wektor, ustawiając jego rozmiar na 0,
-pojemność na 4 oraz alokując pamięć dla danych.
-\subsubsection{vector\_push\_back}
-Funkcja vector\_push\_back dodaje krawędź do wektora. Jeśli rozmiar wektora
-osiągnie jego pojemność, funkcja podwaja pojemność i realokuje pamięć dla
-danych.
-\subsubsection{vector\_free}
-Funkcja vector\_free zwalnia pamięć zajmowaną przez dane wektora.
 \subsubsection{create\_graph}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item int verticies\_num --- liczba wierzchołków w grafie
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item struct Graph --- wskaźnik na utworzony graf lub \texttt{NULL} w przypadku błędu alokacji pamięci.
+\end{itemize}
 Funkcja create\_graph tworzy graf o określonej liczbie wierzchołków, alokując
 pamięć dla tablicy wektorów i inicjalizując każdy wektor.
 \subsubsection{add\_edge}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item struct Graph *graph --- wskaźnik na graf, do którego dodajemy krawędź
+	\item int from --- identyfikator wierzchołka początkowego
+	\item int to --- identyfikator wierzchołka docelowego
+	\item double weight --- waga krawędzi
+	\item const char *name --- nazwa krawędzi
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item void
+\end{itemize}
 Funkcja add\_edge dodaje krawędź do grafu, aktualizując listę sąsiedztwa dla obu wierzchołków (ponieważ graf jest nieskierowany).
 \subsubsection{free\_graph}
+\textbf{Przyjmuje:}
+\begin{itemize}
+	\item struct Graph *graph --- wskaźnik na graf do zwolnienia
+\end{itemize}
+\textbf{Zwraca:}
+\begin{itemize}
+	\item void
+\end{itemize}
 Funkcja free\_graph zwalnia pamięć zajmowaną przez graf, w tym pamięć dla list
 sąsiedztwa i samego grafu.
 \section{node.h}
-Node.h udostępnia następujący struct:
+Node.h udostępnia dwa struktury:
+
+\subsubsection{struct Node}
 \begin{lstlisting}
 typedef struct Node {
+    int id;
     double x;
     double y;
-    int id;
 } Node;
 \end{lstlisting}
-Struct Node reprezentuje wierzchołek w grafie, zawierając informacje o jego
-współrzędnych (x, y) oraz unikalnym identyfikatorze (id).
+Struct \texttt{Node} reprezentuje wierzchołek w grafie, zawierając informacje o jego
+współrzędnych $(x, y)$ oraz unikalnym identyfikatorze \texttt{id}.
+
+\subsubsection{struct GraphLayout}
+\begin{lstlisting}
+typedef struct {
+    int count;
+    Node *nodes;
+} GraphLayout;
+\end{lstlisting}
+Struct \texttt{GraphLayout} przechowuje końcowe wyniki obliczeń --- tablicę \texttt{nodes}
+zawierającą \texttt{count} wierzchołków wraz z wyznaczonymi współrzędnymi. Jest to typ
+przekazywany do funkcji zapisu w \texttt{fileio.c} i zwracany przez funkcje algorytmów.
 \section{tutte\_embedding.c oraz tutte\_embedding.h}
+\subsection{tutte\_embedding.c}
+\subsubsection{find\_embedding}
+\begin{itemize}
+	\item struct Graph *graph --- wskaźnik na graf, dla którego obliczamy embedding
+	\item struct GraphLayout *layout --- wskaźnik na strukturę, do której zapiszemy wyniki
+\end{itemize}
+\begin{itemize}
+	\item void
+\end{itemize}
+Funkcja jako argument przyjmuje structy Graph oraz GraphLayout, liczy za
+pomocą tutte\_embeddingu koordynaty wierzchołków i zapisuje je do struktury
+GraphLayout.
 
 
+\section{spectral\_layout.c oraz spectral\_layout.h}
+\subsection{spectral\_layout.c}
+Spectral\_layout.c udostępnia następujące funkcje:
+\subsubsection{compute\_spectral\_layout}
+Funkcja compute\_spectral\_layout implementuje algorytm rozmieszczenia spektralnego.
+Współrzędne $x$ wierzchołków wyznaczane są na podstawie wektora Fiedlera (drugi wektor
+własny macierzy Laplace'a, odpowiadający najmniejszej niezerowej wartości własnej $\lambda_2$),
+a współrzędne $y$ na podstawie trzeciego wektora własnego ($\lambda_3$). Funkcja wywołuje
+kolejno funkcje pomocnicze i zwraca wypełnioną strukturę GraphLayout.
+\subsubsection{compute\_degrees}
+Funkcja compute\_degrees oblicza stopień każdego wierzchołka grafu, iterując po jego
+liście sąsiedztwa i zapisując wyniki do tablicy degrees, która jest wymagana przez
+pozostałe funkcje algorytmu.
+\subsubsection{laplacian\_multiply}
+Funkcja laplacian\_multiply oblicza iloczyn macierzy Laplace'a i wektora bez jawnego
+budowania macierzy --- korzysta bezpośrednio z listy sąsiedztwa grafu oraz tablicy
+stopni wierzchołków, co pozwala uniknąć alokacji tablicy rozmiaru $n^2$.
+\subsubsection{find\_eigenvector}
+Funkcja find\_eigenvector wyznacza kolejny wektor własny macierzy Laplace'a metodą
+potęgową z deflacją. Przyjmuje tablicę wcześniej znalezionych wektorów własnych
+i ortogonalizuje względem nich wynik, aby uzyskać następny w kolejności wektor własny.
+\subsubsection{orthogonalize}
+Funkcja orthogonalize przeprowadza ortogonalizację Grama--Schmidta danego wektora
+względem przekazanej bazy wektorów, co jest wykorzystywane w trakcie metody potęgowej
+do eliminacji już znalezionych wektorów własnych.
+\subsubsection{normalize\_vector}
+Funkcja normalize\_vector normalizuje wektor do długości jednostkowej, dzieląc każdy
+jego element przez normę euklidesową. Jest wywoływana po każdej iteracji metody
+potęgowej.
+\subsubsection{dot\_product}
+Funkcja dot\_product oblicza iloczyn skalarny dwóch wektorów. Jest funkcją pomocniczą
+wykorzystywaną przez orthogonalize oraz find\_eigenvector do sprawdzania zbieżności.
 
 \end{document}
-

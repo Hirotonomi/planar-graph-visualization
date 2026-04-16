@@ -91,6 +91,7 @@ Format danych binarnych można przedstawić następująco:
 
 Przykład dla wierzchołków 1, 2, 3 i 4 z współrzędnymi (0.0, 0.0), (1.0, 0.0), (1.0, 1.0) i (0.0, 1.0):
 \begin{verbatim}
+[ 04 00 00 00 ]
 [ 01 00 00 00 ][00 00 00 00 00 00 00 00][00 00 00 00 00 00 00 00]
 [ 02 00 00 00 ][00 00 00 00 00 00 F0 3F][00 00 00 00 00 00 00 00]
 [ 03 00 00 00 ][00 00 00 00 00 00 F0 3F][00 00 00 00 00 00 F0 3F]
@@ -119,19 +120,19 @@ Możliwe argumenty wywołania programu są opisane w poniższej tabelce to:
 \begin{center}
 	\begin{tabular}{|c|c|p{7cm}|c|}
 		\hline
-		\textbf{Flaga} & \textbf{Argument}      & \textbf{Opis}                                    & \textbf{Domyślnie} \\
+		\textbf{Flaga} & \textbf{Argument}      & \textbf{Opis}                                    & \textbf{Domyślnie}        \\
 		\hline
-		\texttt{-i}    & \texttt{<nazwa>}     & Nazwa pliku wejściowego z grafem            & \texttt{"input.txt"}   \\
+		\texttt{-i}    & \texttt{<nazwa>}       & Nazwa pliku wejściowego z grafem                 & \texttt{"input.txt"}      \\
 		\hline
-		\texttt{-o}    & \texttt{<nazwa>}     & Ścieżka do pliku wyjściowego z wynikami         & \texttt{Katalog porgramu}  \\
+		\texttt{-o}    & \texttt{<nazwa>}       & Ścieżka do pliku wyjściowego z wynikami          & \texttt{Katalog porgramu} \\
 		\hline
-        \texttt{-on}    & \texttt{<nazwa>}     & Nazwa pliku wyjściowego z wynikami          & \texttt{"output"}  \\
+		\texttt{-on}   & \texttt{<nazwa>}       & Nazwa pliku wyjściowego z wynikami               & \texttt{"output"}         \\
 		\hline
-		\texttt{-a}    & \texttt{<skrót nazwy>} & Wybór algorytmu rozmieszczania wierzchołków      & \texttt{1}         \\
+		\texttt{-a}    & \texttt{<skrót nazwy>} & Wybór algorytmu rozmieszczania wierzchołków      & \texttt{1}                \\
 		\hline
-		\texttt{-b}    & —                      & Zapis wyników w formacie binarnym                & wyłączone          \\
+		\texttt{-b}    & —                      & Zapis wyników w formacie binarnym                & wyłączone                 \\
 		\hline
-		\texttt{-h}    & —                      & Zapis wyników w formacie czytelnym dla człowieka & włączone          \\
+		\texttt{-h}    & —                      & Zapis wyników w formacie czytelnym dla człowieka & włączone                  \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -145,9 +146,9 @@ Możliwe argumenty wywołania programu są opisane w poniższej tabelce to:
 	      szuka pliku o nazwie \texttt{input} w bieżącym katalogu roboczym.
 
 	\item[\texttt{-o <ścieżka>}]
-	      Określa ścieżkę do katalogu wyjściowego, w którym zostanie utworzony plik wyjściowy. 
+	      Określa ścieżkę do katalogu wyjściowego, w którym zostanie utworzony plik wyjściowy.
 	      Jeśli flaga nie zostanie podana, wyniki zostaną zapisane w bieżącym katalogu.
-    \item[\texttt{-on <nazwa>}]
+	\item[\texttt{-on <nazwa>}]
 	      Określa nazwę pliku wyjściowego. Jeśli flaga nie zostanie podana, wyniki zostaną zapisane w pliku o nazwie \texttt{output}.
 
 	\item[\texttt{-a <nr>}]
@@ -272,7 +273,7 @@ Wynik może zawierać przecięcia krawędzi.
     \end{verbatim}
 	      \textit{Kod powrotu:} \texttt{0}
 
-    \item[Błąd alokacji pamięci]
+	\item[Błąd alokacji pamięci]
 	      \hfill \\
 	      \textit{Sytuacja:} Program nie może zaalokować wymaganej pamięci podczas
 	      wczytywania grafu lub wykonywania obliczeń. \\
