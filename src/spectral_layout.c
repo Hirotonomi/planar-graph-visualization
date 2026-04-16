@@ -4,30 +4,29 @@
 #include "node.h"
 
 double** create_laplacian_matrix(Graph *graph) {
-    int n = graph->vertices_num;
-    double **L = malloc(n * sizeof(double *));
-    if (L == NULL) {
+    int vertices_num = graph->vertices_num;
+    double **laplacian_matrix = malloc(vertices_num * sizeof(double *));
+    if (laplacian_matrix == NULL) {
         perror("Blad alokacji pamieci macierzy Laplace'a - wiersze");
         exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < n; i++) {
-        L[i] = calloc(n, sizeof(double));
-        if (L[i] == NULL) {
+    for (int i = 0; i < vertices_num; i++) {
+        laplacian_matrix[i] = calloc(vertices_num, sizeof(double));
+        if (laplacian_matrix[i] == NULL) {
             perror("Blad alokacji pamieci macierzy Laplace'a - kolumny");
             exit(EXIT_FAILURE);
         }
     }
-
-    for (int i = 1; i <= n; i++) {           
+    for (int i = 1; i <= vertices_num; i++) {           
         double degree = 0.0;
         for (int k = 0; k < graph->adj[i].size; k++) {
             int j = graph->adj[i].data[k].to;       
-            L[i-1][j-1] -= 1;                          
+            laplacian_matrix[i-1][j-1] -= 1;                          
             degree += 1;
         }
-        L[i-1][i-1] += degree;                         
+        laplacian_matrix[i-1][i-1] += degree;                         
     }
-    return L;
+    return laplacian_matrix;
 }
 
 void print_laplacian_matrix(double **L, int n) {
@@ -48,6 +47,19 @@ void print_laplacian_matrix(double **L, int n) {
         printf("\n");
     }
     printf("------------------------------------\n\n");
+}
+
+static void identity_matrix(double **empty_matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        memset(empty_matrix[i], 0, n * sizeof(double));   // troche przekombinowane ale działa :p
+        empty_matrix[i][i] = 1.0;
+    }
+}
+
+static void copy_matrix(double **src, double **target, int n) {
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            target[i][j] = src[i][j];
 }
 
 void free_matrix(double **matrix, int n) {
