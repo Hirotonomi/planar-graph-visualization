@@ -1,11 +1,13 @@
 #include "graph.h"
 #include "utils.h"
 #include "node.h"
+#include "math.h"
 #include "fileio.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>   
 
 
 typedef struct {
@@ -27,7 +29,7 @@ int main(int argc, char *argv[]) {
     args.human = 0;
 
     int opt = 0;
-    while (opt = getopt(argc, argv, "i:o:n:a:bh"), opt != -1) {
+    while ((opt = getopt(argc, argv, "i:o:n:a:bh")) != -1) {
         switch (opt) {
         case 'i':
             args.in_file = optarg;
@@ -41,7 +43,7 @@ int main(int argc, char *argv[]) {
         case 'a':
             args.algorithm = parse_algorithm(optarg);
             if (args.algorithm == -1) {
-                fprintf(stderr, "Taki alogorytm nie jest obsługiwany\n");
+                fprintf(stderr, "Taki algorytm nie jest obsługiwany\n");
                 return EXIT_FAILURE;
             }
             break;
@@ -80,15 +82,61 @@ int main(int argc, char *argv[]) {
 
     printf("Graf wczytany pomyslnie!\n");
     print_graph(graph);
-    if (args.algorithm==1){
 
+    GraphLayout *layout = NULL;
+
+    if (args.algorithm == 1) {
+        //================================================================
+        printf("→ Algorytm 1 (Tutte) - dummy layout (tymczasowy)\n");
+        layout = malloc(sizeof(GraphLayout));
+        if (layout) {
+            layout->count = graph->vertices_num;
+            layout->nodes = malloc(layout->count * sizeof(Node));
+            if (layout->nodes) {
+                for (int i = 0; i < layout->count; i++) {
+                    layout->nodes[i].id = i;
+                    layout->nodes[i].x = i; 
+                    layout->nodes[i].y = i; 
+                }
+            }
+        }
+        //===============================================================
     }
-    else if (args.algorithm==2)
-    {
-        /* code */
+    else if (args.algorithm == 2) {
+        //to delete =============================================
+        printf("→ Algorytm 2 (Spectral) - dummy layout\n");
+        layout = malloc(sizeof(GraphLayout));
+        if (layout) {
+            layout->count = graph->vertices_num;
+            layout->nodes = malloc(layout->count * sizeof(Node));
+            if (layout->nodes) {
+                for (int i = 0; i < layout->count; i++) {
+                    layout->nodes[i].id = i;
+                    layout->nodes[i].x = i * 8.0;
+                    layout->nodes[i].y = (i % 2 == 0) ? 0.0 : 10.0;
+                }
+            }
+        }
     }
-    //bez else bo obsługa sprawdzania algorytmu jest wcześniej
-    
+    //==========================================================
+
+    if (layout == NULL || layout->nodes == NULL) {
+        fprintf(stderr, "Błąd: Nie udało się stworzyć layoutu.\n");
+        free_graph(graph);
+        return EXIT_FAILURE;
+    }
+
+    char full_path[512];
+    if (args.binary) {
+        snprintf(full_path, sizeof(full_path), "%s/%s.bin", args.out_path, args.out_file);
+        save_layout_binary(full_path, layout);
+    } else if (args.human) {
+        snprintf(full_path, sizeof(full_path), "%s/%s.txt", args.out_path, args.out_file);
+        save_layout_human(full_path, layout);
+    }
+
+    free(layout->nodes);
+    free(layout);
     free_graph(graph);
   
     return EXIT_SUCCESS;
