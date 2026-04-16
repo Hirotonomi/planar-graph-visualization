@@ -62,7 +62,7 @@ void save_layout_human(const char *filepath, GraphLayout *layout) {
 void save_layout_binary(const char *filepath, GraphLayout *layout) {
     FILE *f = fopen(filepath, "wb");
     if (!f) {perror("Nie udało się otworzyć pliku do zapisu");return;}
-
+    fwrite(&layout->count, sizeof(int), 1, f);
     for (int i = 0; i < layout->count; i++) {
         Node n = layout->nodes[i];
         fwrite(&n.id, sizeof(int), 1, f);      // 4 bytes
