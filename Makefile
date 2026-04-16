@@ -1,4 +1,4 @@
-.PHONY: all build clean help run
+.PHONY: all build clean help run test
 
 CC := gcc
 CFLAGS := -Wall -Wextra
@@ -38,6 +38,11 @@ build: $(TARGET)
 # Run the application
 run: $(TARGET)
 	./$(TARGET)
+
+# Run planar graph test cases
+test: $(TARGET)
+	@chmod +x tests/run_planar_tests.sh
+	@tests/run_planar_tests.sh
 
 # Clean build artifacts
 clean:

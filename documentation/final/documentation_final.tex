@@ -84,7 +84,7 @@ Program:
 		\hline
 		\texttt{-n}    & \texttt{<nazwa>}   & Nazwa pliku wyjściowego bez rozszerzenia (domyślnie \texttt{output}) \\
 		\hline
-		\texttt{-a}    & \texttt{alg1|alg2} & Wybór algorytmu (\texttt{alg1} = Tutte, \texttt{alg2} = placeholder) \\
+		\texttt{-a}    & \texttt{1|2}       & Wybór algorytmu (\texttt{1} = Tutte, \texttt{2} = Spectral Layout)   \\
 		\hline
 		\texttt{-b}    & —                  & Zapis binarny                                                        \\
 		\hline
@@ -168,6 +168,35 @@ W kodzie i dokumentacji ujednolicono komunikaty. Obsłużone są m.in.:
 	\item ostrzeżenia o pomijanych krawędziach (program działa dalej),
 	\item problemy alokacji pamięci (zakończenie awaryjne),
 	\item brak cyklu / problem numeryczny w Tutte (komunikat informacyjny).
+\end{itemize}
+
+\section{Kompilacja i uruchomienie programu}
+Program kompilowany jest przez \texttt{Makefile} znajdujący się w katalogu głównym repozytorium.
+
+\subsection{Kompilacja}
+\begin{verbatim}
+make build
+\end{verbatim}
+Po kompilacji plik wykonywalny znajduje się pod ścieżką:
+\begin{verbatim}
+./bin/planar_graph
+\end{verbatim}
+
+\subsection{Uruchomienie}
+Uruchomienie domyślne (z domyślnym \texttt{input.txt}):
+\begin{verbatim}
+./bin/planar_graph
+\end{verbatim}
+
+Uruchomienie z przykładowymi flagami:
+\begin{verbatim}
+./bin/planar_graph -i graf.txt -o wyniki -n wynik -a 1 -b -h
+\end{verbatim}
+
+\section{Limitacje}
+Obecna wersja programu ma następujące ograniczenia:
+\begin{itemize}
+	\item algorytm Tutte może nie zadziałać dla danego grafu z powody jego konstrukcji (brak cyklu, nie 3-connected)
 \end{itemize}
 
 \section{Podsumowanie końcowe}
