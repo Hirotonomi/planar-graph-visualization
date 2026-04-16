@@ -2,6 +2,7 @@
 #include "graph.h"
 #include "node.h"
 #include "tutte.h"
+#include "spectral_layout.h"
 #include "utils.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -117,6 +118,14 @@ int main(int argc, char *argv[]) {
         }
         //===============================================================
     } else if (args.algorithm == 2) {
+
+        double **L = create_laplacian_matrix(graph);
+
+        // Wyświetlenie do debugowania
+        print_laplacian_matrix(L, graph->vertices_num);
+
+
+        free_matrix(L, graph->vertices_num);
         // to delete =============================================
         printf("→ Algorytm 2 (Spectral) - dummy layout\n");
         layout = malloc(sizeof(GraphLayout));
