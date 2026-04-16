@@ -79,14 +79,6 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    printf("Plik wejściowy: %s\n", args.in_file);
-    printf("Ścieżka wyjściowa: %s\n", args.out_path);
-    printf("Plik wyjściowy: %s\n", args.out_file);
-    printf("Algorytm: %d\n", args.algorithm);
-    printf("Format binarny: %s\n", args.binary ? "tak" : "nie");
-    printf("Czytelny dla czlowieka: %s\n", args.human ? "tak" : "nie");
-
-    printf("Wczytywanie grafu z pliku: %s...\n", args.in_file);
     Graph *graph = load_graph_from_file(args.in_file, vertices_amount);
 
     if (graph == NULL) {
