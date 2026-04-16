@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     int vertices_amount = find_max_vertex_id(args.in_file);
     
     if (vertices_amount == 0) {
-        fprintf(stderr, "Błąd: ma zły format, mozliwe: 1 lub 0 wierzcholkow, same niedodatnie id wierzcholkow.\n");
+        fprintf(stderr, "Blad: plik ma zły format, mozliwe: 1 lub 0 wierzcholkow, same niedodatnie id wierzcholkow.\n");
         return EXIT_FAILURE;
     }
 

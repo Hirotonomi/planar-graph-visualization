@@ -39,7 +39,7 @@ int find_max_vertex_id(const char *filepath) {
     double weight;
     int max_vertex = 0;
 
-    while (fscanf(file, "%*s %d %d %lf", &from, &to, &weight) == 4) {
+    while (fscanf(file, "%*s %d %d %lf", &from, &to, &weight) == 3) {
         if (from > max_vertex) max_vertex = from;
         if (to > max_vertex) max_vertex = to;
     }
