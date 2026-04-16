@@ -3,7 +3,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#define MAXN 2000 // 1000 takes ~1s 10^9 operations, 2000 takes ~8s
+#define MAXN                                                                   \
+    2001 // vertex ids are 1-indexed, so index 0 is intentionally unused
 #define EPS 1e-9
 #define R 100 // circle radius
 #define MAXCYCLES 100
@@ -126,19 +127,25 @@ void fix_cycle(int cycle[], int size) {
 
 void build_linear_equations(Graph *g) {
     int n = g->vertices_num;
-    for (int i = 0; i < n; i++) {
+    for (int i = 1; i <= n; i++) {
         bx[i] = by[i] = 0;
-        for (int j = 0; j < n; j++) {
+        for (int j = 1; j <= n; j++) {
             A[i][j] = 0;
         }
     }
-    for (int i = 0; i < n; i++) {
+    for (int i = 1; i <= n; i++) {
         if (is_boundary[i]) {
             A[i][i] = 1.0;
             bx[i] = nodes[i].x;
             by[i] = nodes[i].y;
         } else {
             int deg = g->adj[i].size;
+            if (deg == 0) {
+                A[i][i] = 1.0;
+                bx[i] = 0.0;
+                by[i] = 0.0;
+                continue;
+            }
             A[i][i] = (double)deg;
             for (int k = 0; k < deg; k++) {
                 int j = g->adj[i].data[k].to;
@@ -150,35 +157,32 @@ void build_linear_equations(Graph *g) {
     }
 }
 
-// Gauss przez ai bo mi się nie chciało pisać
-// FIX: usunąć komentarz XD (oraz może sprawdzić gaussa?)
 void solve(int n, double A[MAXN][MAXN], double b[MAXN], double x[MAXN]) {
     int i, j, k;
-    for (i = 0; i < n; i++) {
+    for (i = 1; i <= n; i++) {
         double pivot = A[i][i];
         if (fabs(pivot) < 1e-12) {
             printf("Numerical issue: zero pivot");
             return;
         }
-        for (j = i; j < n; j++) {
+        for (j = i; j <= n; j++) {
             A[i][j] /= pivot;
         }
         b[i] /= pivot;
-        for (k = 0; k < n; k++) {
+        for (k = 1; k <= n; k++) {
             if (k == i) {
                 continue;
             }
             double factor = A[k][i];
-            for (j = i; j < n; j++) {
+            for (j = i; j <= n; j++) {
                 A[k][j] -= factor * A[i][j];
             }
             b[k] -= factor * b[i];
         }
     }
-    for (i = 0; i < n; i++) x[i] = b[i];
+    for (i = 1; i <= n; i++) x[i] = b[i];
 }
 
-// FIX: More AI stuff to test
 int segments_intersect(double ax, double ay, double bx, double by, double cx,
                        double cy, double dx, double dy) {
 
@@ -192,26 +196,23 @@ int segments_intersect(double ax, double ay, double bx, double by, double cx,
 int has_crossing(Graph *g, double px[], double py[]) {
     int n = g->vertices_num;
 
-    for (int u = 0; u < n; u++) {
+    for (int u = 1; u <= n; u++) {
         for (int i = 0; i < g->adj[u].size; i++) {
 
             int v = g->adj[u].data[i].to;
-
-            // avoid double-checking edges
             if (u >= v) continue;
 
-            for (int a = 0; a < n; a++) {
+            for (int a = 1; a <= n; a++) {
                 for (int j = 0; j < g->adj[a].size; j++) {
 
                     int b = g->adj[a].data[j].to;
 
                     if (a >= b) continue;
 
-                    // skip same or shared-vertex edges
                     if (u == a || u == b || v == a || v == b) continue;
                     if (segments_intersect(px[u], py[u], px[v], py[v], px[a],
                                            py[a], px[b], py[b])) {
-                        return 1; // crossing found
+                        return 1;
                     }
                 }
             }
@@ -221,12 +222,16 @@ int has_crossing(Graph *g, double px[], double py[]) {
     return 0;
 }
 
-void find_embedding(Graph *g) {
+void find_embedding(Graph *g, GraphLayout *layout) {
     int n = g->vertices_num;
     memset(visited, 0, sizeof(visited));
     memset(par, -1, sizeof(par));
     cycle_count = 0;
-    dfs_cycles(g, 0, -1);
+    for (int v = 1; v <= n; v++) {
+        if (!visited[v]) {
+            dfs_cycles(g, v, -1);
+        }
+    }
     if (cycle_count == 0) {
         printf("No cycle found");
         return;
@@ -240,13 +245,17 @@ void find_embedding(Graph *g) {
         solve(n, A, bx, rx);
         build_linear_equations(g);
         solve(n, A, by, ry);
-        for (int v = 0; v < g->vertices_num; v++) {
+        for (int v = 1; v <= g->vertices_num; v++) {
             nodes[v].x = rx[v];
             nodes[v].y = ry[v];
         }
 
         if (!has_crossing(g, rx, ry)) {
-            printf("Planar embedding found: cycle size %d\n", cycle_sizes[i]);
+            for (int v = 1; v <= g->vertices_num; v++) {
+                layout->nodes[v - 1].id = v;
+                layout->nodes[v - 1].x = nodes[v].x;
+                layout->nodes[v - 1].y = nodes[v].y;
+            }
             return;
         }
     }

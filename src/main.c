@@ -1,14 +1,12 @@
-#include "graph.h"
-#include "utils.h"
-#include "node.h"
-#include "math.h"
 #include "fileio.h"
+#include "graph.h"
+#include "node.h"
+#include "tutte.h"
+#include "utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>   
-
 
 typedef struct {
     char *in_file;
@@ -66,9 +64,17 @@ int main(int argc, char *argv[]) {
     }
 
     int vertices_amount = find_max_vertex_id(args.in_file);
-    
+
+    if (vertices_amount < 0) {
+        fprintf(stderr,
+                "Blad: nie mozna otworzyc pliku wejściowego: %s\n",
+                args.in_file);
+        return EXIT_FAILURE;
+    }
+
     if (vertices_amount == 0) {
-        fprintf(stderr, "Blad: plik ma zły format, mozliwe: 1 lub 0 wierzcholkow, same niedodatnie id wierzcholkow.\n");
+        fprintf(stderr, "Blad: plik ma zły format, mozliwe: 1 lub 0 "
+                        "wierzcholkow, same niedodatnie id wierzcholkow.\n");
         return EXIT_FAILURE;
     }
 
@@ -78,12 +84,13 @@ int main(int argc, char *argv[]) {
     printf("Algorytm: %d\n", args.algorithm);
     printf("Format binarny: %s\n", args.binary ? "tak" : "nie");
     printf("Czytelny dla człowieka: %s\n", args.human ? "tak" : "nie");
-  
+
     printf("Wczytywanie grafu z pliku: %s...\n", args.in_file);
     Graph *graph = load_graph_from_file(args.in_file, vertices_amount);
 
     if (graph == NULL) {
-        fprintf(stderr, "Błąd: Nie udało się wczytac grafu. Sprawdź czy plik istnieje i ma poprawny format.\n");
+        fprintf(stderr, "Błąd: Nie udało się wczytac grafu. Sprawdź czy plik "
+                        "istnieje i ma poprawny format.\n");
         return EXIT_FAILURE;
     }
 
@@ -94,23 +101,23 @@ int main(int argc, char *argv[]) {
 
     if (args.algorithm == 1) {
         //================================================================
-        printf("→ Algorytm 1 (Tutte) - dummy layout (tymczasowy)\n");
+        printf("→ Algorytm 1 (Tutte)\n");
         layout = malloc(sizeof(GraphLayout));
         if (layout) {
             layout->count = graph->vertices_num;
             layout->nodes = malloc(layout->count * sizeof(Node));
             if (layout->nodes) {
                 for (int i = 0; i < layout->count; i++) {
-                    layout->nodes[i].id = i;
-                    layout->nodes[i].x = i; 
-                    layout->nodes[i].y = i; 
+                    layout->nodes[i].id = i + 1;
+                    layout->nodes[i].x = 0.0;
+                    layout->nodes[i].y = 0.0;
                 }
+                find_embedding(graph, layout);
             }
         }
         //===============================================================
-    }
-    else if (args.algorithm == 2) {
-        //to delete =============================================
+    } else if (args.algorithm == 2) {
+        // to delete =============================================
         printf("→ Algorytm 2 (Spectral) - dummy layout\n");
         layout = malloc(sizeof(GraphLayout));
         if (layout) {
@@ -118,8 +125,8 @@ int main(int argc, char *argv[]) {
             layout->nodes = malloc(layout->count * sizeof(Node));
             if (layout->nodes) {
                 for (int i = 0; i < layout->count; i++) {
-                    layout->nodes[i].id = i;
-                    layout->nodes[i].x = i * 8.0;
+                    layout->nodes[i].id = i + 1;
+                    layout->nodes[i].x = (i + 1) * 8.0;
                     layout->nodes[i].y = (i % 2 == 0) ? 0.0 : 10.0;
                 }
             }
@@ -135,16 +142,18 @@ int main(int argc, char *argv[]) {
 
     char full_path[512];
     if (args.binary) {
-        snprintf(full_path, sizeof(full_path), "%s/%s.bin", args.out_path, args.out_file);
+        snprintf(full_path, sizeof(full_path), "%s/%s.bin", args.out_path,
+                 args.out_file);
         save_layout_binary(full_path, layout);
     } else if (args.human) {
-        snprintf(full_path, sizeof(full_path), "%s/%s.txt", args.out_path, args.out_file);
+        snprintf(full_path, sizeof(full_path), "%s/%s.txt", args.out_path,
+                 args.out_file);
         save_layout_human(full_path, layout);
     }
 
     free(layout->nodes);
     free(layout);
     free_graph(graph);
-  
+
     return EXIT_SUCCESS;
 }
