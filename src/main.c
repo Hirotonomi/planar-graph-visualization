@@ -118,23 +118,9 @@ int main(int argc, char *argv[]) {
         }
         //===============================================================
     } else if (args.algorithm == 2) {
-        solve_using_spectral_layout(graph);
-        // to delete =============================================
-        printf("→ Algorytm 2 (Spectral) - dummy layout\n");
-        layout = malloc(sizeof(GraphLayout));
-        if (layout) {
-            layout->count = graph->vertices_num;
-            layout->nodes = malloc(layout->count * sizeof(Node));
-            if (layout->nodes) {
-                for (int i = 0; i < layout->count; i++) {
-                    layout->nodes[i].id = i + 1;
-                    layout->nodes[i].x = (i + 1) * 8.0;
-                    layout->nodes[i].y = (i % 2 == 0) ? 0.0 : 10.0;
-                }
-            }
-        }
+    printf("→ Algorytm 2 (Spectral Layout)\n");
+    layout = solve_using_spectral_layout(graph);
     }
-    //==========================================================
 
     if (layout == NULL || layout->nodes == NULL) {
         fprintf(stderr, "Bląd: Nie udało się stworzyć layoutu.\n");

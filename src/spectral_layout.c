@@ -137,41 +137,85 @@ void free_matrix(double **matrix, int n) {
 GraphLayout* solve_using_spectral_layout(Graph *graph)
 {
     if (graph == NULL || graph->vertices_num < 2) {
-        fprintf(stderr, "Bląd: Graf jest pusty lub ma za malo wierzcholkow do spectral layout.\n");
+        fprintf(stderr, "Błąd: Graf jest pusty lub ma za mało wierzchołków do spectral layout.\n");
         return NULL;
     }
 
     int n = graph->vertices_num;
 
     double **laplacian = create_laplacian_matrix(graph);
-    print_matrix(laplacian, n);
+    // print_matrix(laplacian, n);                    // debug
 
-    // use this bit in the eigenproblem solver
-    double **symmetric_matrix_A = malloc(n * sizeof(double*));
-    double **eigenvector_matrix_V = malloc(n * sizeof(double*));
+    double **A = malloc(n * sizeof(double*));     // będzie miała wartości własne na diagonalu
+    double **V = malloc(n * sizeof(double*));     // kolumny = wektory własne
     for (int i = 0; i < n; i++) {
-        symmetric_matrix_A[i] = malloc(n * sizeof(double));
-        eigenvector_matrix_V[i] = malloc(n * sizeof(double));
+        A[i] = malloc(n * sizeof(double));
+        V[i] = malloc(n * sizeof(double));
     }
-    copy_matrix(laplacian, symmetric_matrix_A, n);
-    identity_matrix(eigenvector_matrix_V, n);
 
-    jacobi_eigen(symmetric_matrix_A, eigenvector_matrix_V, n);
+    copy_matrix(laplacian, A, n);
+    identity_matrix(V, n);
 
-    printf("\n--- Macierz A (wartości wlasne na diagonalach) ---\n");
-    print_matrix(symmetric_matrix_A, n);
+    jacobi_eigen(A, V, n);
 
-    printf("\n--- Macierz V (wektory wlasne w kolumnach) ---\n");
-    print_matrix(eigenvector_matrix_V, n);
+    // printf("\n--- Macierz A (wartości własne na diagonalu) ---\n");
+    print_matrix(A, n);
+
+    // printf("\n--- Macierz V (wektory własne w kolumnach) ---\n");
+    print_matrix(V, n);
 
 
+    int idx_lambda2 = -1, idx_lambda3 = -1;
+    double smallest = 1e9, second = 1e9;
+
+    for (int i = 0; i < n; i++) {
+        double val = fabs(A[i][i]);               
+        if (val < 1e-8) continue;                 
+
+        if (val < smallest) {
+            second = smallest;
+            idx_lambda3 = idx_lambda2;
+            smallest = val;
+            idx_lambda2 = i;
+        } else if (val < second) {
+            second = val;
+            idx_lambda3 = i;
+        }
+    }
+
+    if (idx_lambda2 == -1 || idx_lambda3 == -1) {
+        fprintf(stderr, "Blad: Nie znaleziono dwoch niezerowych wartosci wlasnych.\n");
+        goto cleanup;
+    }
+
+    GraphLayout *layout = malloc(sizeof(GraphLayout));
+    if (!layout) goto cleanup;
+
+    layout->count = n;
+    layout->nodes = malloc(n * sizeof(Node));
+    if (!layout->nodes) {
+        free(layout);
+        goto cleanup;
+    }
+
+    const double SCALE = 150.0;
+
+    for (int i = 0; i < n; i++) {
+        layout->nodes[i].id = i + 1;
+        layout->nodes[i].x = V[i][idx_lambda2] * SCALE;
+        layout->nodes[i].y = V[i][idx_lambda3] * SCALE;
+    }
+
+
+cleanup:
     free_matrix(laplacian, n);
     for (int i = 0; i < n; i++) {
-        free(symmetric_matrix_A[i]);
-        free(eigenvector_matrix_V[i]);
+        free(A[i]);
+        free(V[i]);
     }
-    free(symmetric_matrix_A);
-    free(eigenvector_matrix_V);
+    free(A);
+    free(V);
 
-    return NULL;
+    if (layout){return layout;}
+    else{return NULL;}
 }
