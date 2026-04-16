@@ -59,3 +59,18 @@ void save_layout_human(const char *filepath, GraphLayout *layout) {
     fclose(f);
     printf("Wyniki zapisano pomyślnie do: %s\n", filepath);
 }
+
+void save_layout_binary(const char *filepath, GraphLayout *layout) {
+    FILE *f = fopen(filepath, "wb");
+    if (!f) {perror("Nie udało się otworzyć pliku do zapisu");return;}
+
+    for (int i = 0; i < layout->count; i++) {
+        Node n = layout->nodes[i];
+        fwrite(&n.id, sizeof(int), 1, f);      // 4 bytes
+        fwrite(&n.x,  sizeof(double), 1, f);   // 8 bytes
+        fwrite(&n.y,  sizeof(double), 1, f);   // 8 bytes
+    }
+
+    fclose(f);
+    printf("Wyniki zapisano pomyślnie do: %s\n", filepath);
+}
