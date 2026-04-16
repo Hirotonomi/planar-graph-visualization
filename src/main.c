@@ -2,6 +2,7 @@
 #include "graph.h"
 #include "node.h"
 #include "tutte.h"
+#include "spectral_layout.h"
 #include "utils.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -41,7 +42,7 @@ int main(int argc, char *argv[]) {
         case 'a':
             args.algorithm = parse_algorithm(optarg);
             if (args.algorithm == -1) {
-                fprintf(stderr, "Taki algorytm nie jest obsługiwany\n");
+                fprintf(stderr, "Taki algorytm nie jest obslugiwany\n");
                 return EXIT_FAILURE;
             }
             break;
@@ -72,14 +73,14 @@ int main(int argc, char *argv[]) {
     }
 
     if (vertices_amount == 0) {
-        fprintf(stderr, "Blad: plik ma zły format, mozliwe: 1 lub 0 "
+        fprintf(stderr, "Blad: plik ma zly format, mozliwe: 1 lub 0 "
                         "wierzcholkow, same niedodatnie id wierzcholkow.\n");
         return EXIT_FAILURE;
     }
     Graph *graph = load_graph_from_file(args.in_file, vertices_amount);
 
     if (graph == NULL) {
-        fprintf(stderr, "Błąd: Nie udało się wczytac grafu. Sprawdź czy plik "
+        fprintf(stderr, "Bląd: Nie udalo się wczytac grafu. Sprawdź czy plik "
                         "istnieje i ma poprawny format.\n");
         return EXIT_FAILURE;
     }
@@ -102,25 +103,12 @@ int main(int argc, char *argv[]) {
         }
         //===============================================================
     } else if (args.algorithm == 2) {
-        // to delete =============================================
-        printf("→ Algorytm 2 (Spectral) - dummy layout\n");
-        layout = malloc(sizeof(GraphLayout));
-        if (layout) {
-            layout->count = graph->vertices_num;
-            layout->nodes = malloc(layout->count * sizeof(Node));
-            if (layout->nodes) {
-                for (int i = 0; i < layout->count; i++) {
-                    layout->nodes[i].id = i + 1;
-                    layout->nodes[i].x = (i + 1) * 8.0;
-                    layout->nodes[i].y = (i % 2 == 0) ? 0.0 : 10.0;
-                }
-            }
-        }
+    printf("→ Algorytm 2 (Spectral Layout)\n");
+    layout = solve_using_spectral_layout(graph);
     }
-    //==========================================================
 
     if (layout == NULL || layout->nodes == NULL) {
-        fprintf(stderr, "Błąd: Nie udało się stworzyć layoutu.\n");
+        fprintf(stderr, "Bląd: Nie udało się stworzyć layoutu.\n");
         free_graph(graph);
         return EXIT_FAILURE;
     }
