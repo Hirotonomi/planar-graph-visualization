@@ -106,24 +106,25 @@ static void jacobi_eigen(double **symmetric_matrix_A, double **eigenvector_matri
     }
 }
 
-void print_matrix(double **matrix, int n) {
-    printf("\n--- Macierz Laplace'a (%d x %d) ---\n", n, n);
+// debug
+// void print_matrix(double **matrix, int n) {
+//     printf("\n--- Macierz Laplace'a (%d x %d) ---\n", n, n);
     
-    printf("     ");
-    for (int j = 1; j <= n; j++) {
-        printf("[%d]      ", j);
-    }
-    printf("\n");
+//     printf("     ");
+//     for (int j = 1; j <= n; j++) {
+//         printf("[%d]      ", j);
+//     }
+//     printf("\n");
 
-    for (int i = 1; i <= n; i++) {
-        printf("[%d] ", i);
-        for (int j = 1; j <= n; j++) {
-            printf("%8.3f ", matrix[i-1][j-1]); 
-        }
-        printf("\n");
-    }
-    printf("------------------------------------\n\n");
-}
+//     for (int i = 1; i <= n; i++) {
+//         printf("[%d] ", i);
+//         for (int j = 1; j <= n; j++) {
+//             printf("%8.3f ", matrix[i-1][j-1]); 
+//         }
+//         printf("\n");
+//     }
+//     printf("------------------------------------\n\n");
+// }
 
 
 void free_matrix(double **matrix, int n) {
